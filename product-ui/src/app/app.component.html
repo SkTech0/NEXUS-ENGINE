@@ -1,0 +1,21 @@
+<div class="app-shell">
+  <header class="app-shell__header">
+    <a routerLink="/" class="app-shell__brand">NEXUS Playground</a>
+    <nav class="app-shell__nav">
+      <a routerLink="/playground" routerLinkActive="active">Playground</a>
+      <a routerLink="/trust" routerLinkActive="active">Trust</a>
+      <a routerLink="/history" routerLinkActive="active">History</a>
+
+      <span class="app-shell__divider"></span>
+
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/engine" routerLinkActive="active">Engine</a>
+      <a routerLink="/ai-console" routerLinkActive="active">AI Console</a>
+      <a routerLink="/graph" routerLinkActive="active">Graph</a>
+      <a routerLink="/optimization" routerLinkActive="active">Optimization</a>
+    </nav>
+  </header>
+  <main class="app-shell__main">
+    <router-outlet />
+  </main>
+</div>

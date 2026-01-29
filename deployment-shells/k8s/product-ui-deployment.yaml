@@ -1,0 +1,56 @@
+# Product-UI — independent K8s deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-ui
+  labels:
+    app: product-ui
+    tier: service-shell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-ui
+  template:
+    metadata:
+      labels:
+        app: product-ui
+        tier: service-shell
+    spec:
+      containers:
+        - name: product-ui
+          image: nexus-product-ui:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-ui
+  labels:
+    app: product-ui
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: product-ui

@@ -1,0 +1,36 @@
+# OpenAPI contract — Optimization API subset
+openapi: 3.0.3
+info:
+  title: Nexus Optimization API
+  version: 0.0.1
+
+paths:
+  /api/Optimization/optimize:
+    post:
+      summary: Optimize
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetId: { type: string }
+                objective: { type: string }
+                constraints: { type: object }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  targetId: { type: string }
+                  value: { type: number }
+                  feasible: { type: boolean }
+  /api/Optimization/health:
+    get:
+      summary: Health
+      responses:
+        "200":
+          description: OK

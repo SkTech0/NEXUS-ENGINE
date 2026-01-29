@@ -1,0 +1,65 @@
+# Engine-optimization service shell — independent K8s deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine-optimization
+  labels:
+    app: engine-optimization
+    tier: service-shell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: engine-optimization
+  template:
+    metadata:
+      labels:
+        app: engine-optimization
+        tier: service-shell
+    spec:
+      containers:
+        - name: engine-optimization
+          image: nexus-engine-optimization:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3005
+              name: http
+          env:
+            - name: ENGINE_OPTIMIZATION_SERVICE_PORT
+              value: "3005"
+            - name: NEXUS_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: nexus-env
+                  key: NEXUS_ENV
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3005
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: engine-optimization
+  labels:
+    app: engine-optimization
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3005
+      targetPort: 3005
+      protocol: TCP
+      name: http
+  selector:
+    app: engine-optimization

@@ -1,0 +1,27 @@
+{
+  "name": "engine-optimization-layer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "engine-optimization-layer/src",
+  "tags": ["scope:optimization", "domain:engine"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/engine-optimization-layer",
+        "main": "engine-optimization-layer/src/index.ts",
+        "tsConfig": "engine-optimization-layer/tsconfig.json"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["engine-optimization-layer/**/*.ts"]
+      }
+    }
+  }
+}

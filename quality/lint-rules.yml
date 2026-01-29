@@ -1,0 +1,20 @@
+# Lint quality gates — Nexus Engine
+
+rules:
+  - name: eslint_pass
+    description: "ESLint must pass for TS/JS"
+    targets: [product-ui, engine-core]
+  - name: prettier_check
+    description: "Prettier check must pass"
+    targets: [all]
+  - name: dotnet_format
+    description: "dotnet format for engine-api"
+    targets: [engine-api]
+  - name: ruff_pass
+    description: "Ruff (Python) must pass"
+    targets: [engine-ai, engine-data, engine-intelligence, engine-optimization, engine-distributed, engine-trust]
+
+gates:
+  - lint_must_pass: true
+  - no_error_level: true
+  - warning_as_error: false

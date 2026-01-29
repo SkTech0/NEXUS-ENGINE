@@ -1,0 +1,7 @@
+{
+  "name": "saas-layer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "saas-layer/src",
+  "tags": ["scope:saas", "type:lib"]
+}

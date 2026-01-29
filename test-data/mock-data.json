@@ -1,0 +1,23 @@
+{
+  "engine": {
+    "action": "push",
+    "parameters": { "source": "mock", "id": "mock-001" }
+  },
+  "intelligence": {
+    "context": "mock-eval",
+    "inputs": { "feature_a": 1.0, "feature_b": 0.5 }
+  },
+  "optimization": {
+    "targetId": "t-mock",
+    "objective": "minimize",
+    "constraints": { "budget": 100 }
+  },
+  "ai": {
+    "modelId": "default",
+    "inputs": { "x": 1, "y": 2 }
+  },
+  "trust": {
+    "claimType": "token",
+    "payload": { "sub": "user-mock", "iss": "test" }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus-engine.io/schemas/reasoning-schema.json",
+  "title": "EEL Reasoning Explanation",
+  "description": "Reasoning path structure for explainability",
+  "type": "object",
+  "required": ["reasoning_explanation_id", "trace_id", "target_ref", "generated_at", "locale", "steps", "summary"],
+  "properties": {
+    "reasoning_explanation_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "target_ref": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "locale": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step_id", "sequence", "reasoning_type", "conclusion", "output_ref"],
+        "properties": {
+          "step_id": { "type": "string" },
+          "sequence": { "type": "integer" },
+          "reasoning_type": {
+            "type": "string",
+            "enum": ["rule_based", "constraint_satisfaction", "inference", "aggregation", "delegation", "fallback"]
+          },
+          "conclusion": { "type": "string" },
+          "conclusion_readable": { "type": ["string", "null"] },
+          "input_refs": { "type": "array", "items": { "type": "string" } },
+          "output_ref": { "type": "string" },
+          "evidence_ref": { "type": ["string", "null"] },
+          "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "duration_ms": { "type": ["number", "null"] }
+        }
+      }
+    },
+    "summary": { "type": "string" },
+    "step_count": { "type": "integer" },
+    "conclusion_refs": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

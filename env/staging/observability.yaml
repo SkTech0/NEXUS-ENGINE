@@ -1,0 +1,20 @@
+# ENV PACK: staging (prod-like)
+# Precedence: defaults → env pack → secrets → runtime
+env: staging
+observability:
+  otel:
+    collectorEndpoint: http://otel-collector.observability:4317
+    serviceName: nexus-engine
+    resourceAttributes:
+      deployment.environment: staging
+  metrics:
+    enabled: true
+    scrape:
+      prometheusPath: /metrics
+  tracing:
+    enabled: true
+    # staging mirrors prod sampling to validate SLO impact.
+    samplingRatio: 0.05
+  logging:
+    format: json
+    level: info

@@ -1,0 +1,48 @@
+# OpenAPI contract — AI API subset (engine-api /api/AI)
+openapi: 3.0.3
+info:
+  title: Nexus AI API
+  version: 0.0.1
+
+paths:
+  /api/AI/infer:
+    post:
+      summary: Run inference
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [modelId]
+              properties:
+                modelId: { type: string }
+                inputs: { type: object }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  outputs: { type: object }
+                  latencyMs: { type: number }
+                  modelId: { type: string }
+  /api/AI/models:
+    get:
+      summary: List models
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  modelIds: { type: array, items: { type: string } }
+  /api/AI/health:
+    get:
+      summary: Health
+      responses:
+        "200":
+          description: OK

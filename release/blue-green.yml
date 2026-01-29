@@ -1,0 +1,50 @@
+# Blue/Green deployment workflow (template)
+#
+# Purpose:
+# - Deploy candidate (green) alongside current (blue)
+# - Validate green, then flip traffic atomically
+# - Keep blue for rapid rollback
+#
+name: nexus-engine-blue-green-template
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Target environment"
+        required: true
+        type: choice
+        options: [staging, prod]
+
+jobs:
+  deploy_green:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy green (template)
+        run: |
+          echo "Deploy candidate as GREEN alongside BLUE"
+
+  validate_green:
+    needs: [deploy_green]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate green (template)
+        run: |
+          echo "Run smoke + integration + performance checks against GREEN"
+
+  switch_traffic:
+    needs: [validate_green]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Flip traffic to green (template)
+        run: |
+          echo "Atomically route traffic to GREEN"
+
+  observe:
+    needs: [switch_traffic]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Observe and finalize (template)
+        run: |
+          echo "Observe for defined window; if stable, decommission BLUE after retention window"
+

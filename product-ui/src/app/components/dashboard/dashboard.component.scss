@@ -1,0 +1,60 @@
+.dashboard {
+  padding: 1.5rem;
+}
+
+.dashboard__header {
+  margin-bottom: 1.5rem;
+
+  h2 {
+    margin: 0 0 0.25rem 0;
+    color: var(--nexus-primary, #2563eb);
+  }
+}
+
+.dashboard__subtitle {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.dashboard__nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  a {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    background: var(--nexus-surface, #f1f5f9);
+    color: inherit;
+
+    &.active {
+      background: var(--nexus-primary, #2563eb);
+      color: white;
+    }
+  }
+}
+
+.dashboard__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+}

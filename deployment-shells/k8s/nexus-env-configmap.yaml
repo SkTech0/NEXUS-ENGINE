@@ -1,0 +1,10 @@
+# Optional ConfigMap for NEXUS_ENV (referenced by deployments).
+# kubectl apply -f deployment-shells/k8s/nexus-env-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-env
+  labels:
+    app: nexus-engine
+data:
+  NEXUS_ENV: "development"

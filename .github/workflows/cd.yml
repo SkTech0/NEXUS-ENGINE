@@ -1,0 +1,149 @@
+# Nexus Engine — CD pipeline
+# Docker build, image scan, push to registry, deploy staging/prod
+
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-engine-api:
+    name: Build engine-api image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@3
+
+      - name: Log in to registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/nexus-engine-api
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest
+
+      - name: Build and push engine-api
+        uses: docker/build-push-action@6
+        with:
+          context: ./engine-api
+          file: ./engine-api/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/nexus-engine-api:latest
+          format: "sarif"
+          output: trivy-engine-api.sarif
+        continue-on-error: true
+
+      - uses: github/codeql-action/upload-sarif@3
+        if: always()
+        with:
+          sarif_file: trivy-engine-api.sarif
+        continue-on-error: true
+
+  build-product-ui:
+    name: Build product-ui image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@3
+
+      - name: Log in to registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/nexus-product-ui
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest
+
+      - name: Build and push product-ui
+        uses: docker/build-push-action@6
+        with:
+          context: .
+          file: ./product-ui/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/nexus-product-ui:latest
+          format: "sarif"
+          output: trivy-product-ui.sarif
+        continue-on-error: true
+
+      - uses: github/codeql-action/upload-sarif@3
+        if: always()
+        with:
+          sarif_file: trivy-product-ui.sarif
+        continue-on-error: true
+
+  deploy-staging:
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+    needs: [build-engine-api, build-product-ui]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    steps:
+      - uses: actions/checkout@4
+      - name: Deploy to staging
+        run: |
+          echo "Deploy staging: push images to registry done. Add kubectl/helm deploy step here."
+          echo "e.g. helm upgrade --install nexus ./infra/helm --set env=staging"
+
+  deploy-prod:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@4
+      - name: Deploy to production
+        run: |
+          echo "Deploy prod: add approval gate and kubectl/helm deploy."
+          echo "e.g. helm upgrade --install nexus ./infra/helm --set env=prod"

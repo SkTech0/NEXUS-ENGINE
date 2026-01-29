@@ -1,0 +1,29 @@
+# ENV PACK: staging (prod-like)
+# This file is metadata about the intended deployment envelope.
+# It is NOT infra-as-code and must not be treated as a source of truth for Terraform/Helm/K8s manifests.
+env: staging
+infra:
+  platform: kubernetes
+  namespace: nexus-staging
+  service:
+    replicas: 3
+    resources:
+      requests:
+        cpu: "1"
+        memory: 1Gi
+      limits:
+        cpu: "3"
+        memory: 4Gi
+  ingress:
+    enabled: true
+    className: nginx
+    host: staging-api.nexus-engine.example.com
+    tlsSecretName: nexus-staging-tls
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCpuUtilizationPercent: 65
+  certManager:
+    enabled: true
+    clusterIssuer: letsencrypt-staging

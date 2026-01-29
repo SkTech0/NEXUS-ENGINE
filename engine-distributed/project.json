@@ -1,0 +1,7 @@
+{
+  "name": "engine-distributed",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "engine-distributed/src",
+  "tags": ["scope:distributed", "domain:engine"]
+}

@@ -1,0 +1,79 @@
+<div class="page">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Playground</div>
+      <h1 class="title">Run a Decision Flow</h1>
+      <p class="subtitle">Enter input and launch a guided execution experience—designed for humans, not logs.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/">Back</a>
+      <button class="btn btn--primary" (click)="run()">Run Decision Flow</button>
+    </div>
+  </div>
+
+  <div class="mode">
+    <button class="pill" [class.pill--active]="mode === 'structured'" (click)="onToggleMode('structured')">
+      Structured
+    </button>
+    <button class="pill" [class.pill--active]="mode === 'json'" (click)="onToggleMode('json')">JSON</button>
+  </div>
+
+  <div class="content" *ngIf="mode === 'structured'">
+    <div class="card">
+      <div class="card__title">Scenario</div>
+      <div class="form">
+        <label class="field">
+          <div class="field__label">Title</div>
+          <input class="input" [(ngModel)]="title" />
+        </label>
+
+        <label class="field">
+          <div class="field__label">Goal</div>
+          <textarea class="textarea" rows="3" [(ngModel)]="goal"></textarea>
+        </label>
+
+        <label class="field">
+          <div class="field__label">Constraints (one per line)</div>
+          <textarea class="textarea" rows="4" [(ngModel)]="constraints"></textarea>
+        </label>
+
+        <label class="field">
+          <div class="field__label">Notes</div>
+          <textarea class="textarea" rows="3" [(ngModel)]="notes"></textarea>
+        </label>
+      </div>
+    </div>
+
+    <div class="card card--hint">
+      <div class="card__title">What happens next</div>
+      <div class="hint">
+        <div class="hint__row">
+          <div class="dot dot--purple"></div>
+          <div class="hint__text">We’ll run Engine → AI → Optimization → Evaluation → Trust.</div>
+        </div>
+        <div class="hint__row">
+          <div class="dot dot--green"></div>
+          <div class="hint__text">You’ll see live step progression and human-readable outputs.</div>
+        </div>
+        <div class="hint__row">
+          <div class="dot dot--amber"></div>
+          <div class="hint__text">Runs are stored in-memory and appear in History.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content" *ngIf="mode === 'json'">
+    <div class="card">
+      <div class="card__title">Input JSON</div>
+      <p class="help">
+        Paste JSON input for the engine. This is still a product demo—no raw logs, just clear outcomes.
+      </p>
+
+      <textarea class="textarea textarea--code" rows="18" [(ngModel)]="jsonText"></textarea>
+      <div class="error" *ngIf="jsonError">{{ jsonError }}</div>
+    </div>
+  </div>
+</div>
+

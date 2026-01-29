@@ -1,0 +1,46 @@
+# Prometheus alerting rules — Nexus Engine
+
+groups:
+  - name: engine-api
+    rules:
+      - alert: EngineApiDown
+        expr: up{job="engine-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "engine-api is down"
+
+      - alert: HighRequestLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="engine-api"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency (p95 > 2s)"
+
+  - name: engines
+    rules:
+      - alert: EngineInferenceLatencyHigh
+        expr: nexus_engine_inference_latency_seconds > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI inference latency high"
+
+      - alert: OptimizationLatencyHigh
+        expr: nexus_engine_optimization_latency_seconds > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Optimization latency high"
+
+      - alert: TrustScoringLatencyHigh
+        expr: nexus_engine_trust_scoring_latency_seconds > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Trust scoring latency high"

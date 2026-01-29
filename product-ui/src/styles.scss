@@ -1,0 +1,17 @@
+/* Nexus Engine — Product UI global styles */
+:root {
+  --nexus-primary: #2563eb;
+  --nexus-surface: #f8fafc;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--nexus-surface);
+}

@@ -1,0 +1,21 @@
+env: local
+engine:
+  name: nexus-engine
+  mode: development
+  compatibility:
+    strict: false
+  endpoints:
+    apiBaseUrl: http://localhost:10021
+    uiBaseUrl: http://localhost:10022
+  runtime:
+    maxConcurrency: 50
+    requestTimeoutMs: 30000
+data:
+  provider: local
+  connectionStringRef: ConnectionStrings__Primary
+ai:
+  modelRegistry: file
+  modelRegistryPath: ./migrations/ai-model-migrations
+featureFlags:
+  provider: file
+  configPath: ./feature-flags/flag-config.yaml

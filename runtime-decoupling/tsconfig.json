@@ -1,0 +1,21 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../dist/runtime-decoupling",
+    "rootDir": ".",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "types": ["node"]
+  },
+  "include": [
+    "index.ts",
+    "config/**/*.ts",
+    "lifecycle/**/*.ts",
+    "orchestration/**/*.ts",
+    "adapters/**/*.ts",
+    "services/**/*.ts",
+    "gateways/**/*.ts",
+    "runners/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,57 @@
+{
+  "title": "Nexus Engine Overview",
+  "uid": "nexus-engine-overview",
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Engine API requests",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{job=\"engine-api\"}[5m])",
+          "legendFormat": "{{method}} {{path}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "API latency p95",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"engine-api\"}[5m]))",
+          "legendFormat": "p95"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Engine inference latency",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "nexus_engine_inference_latency_seconds",
+          "legendFormat": "inference"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Optimization latency",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "nexus_engine_optimization_latency_seconds",
+          "legendFormat": "optimization"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "tags": ["nexus", "engine"]
+}

@@ -1,0 +1,21 @@
+env: dev
+ai:
+  providers:
+    - name: azure-openai
+      type: azure-openai
+      enabled: false
+      endpointEnvVar: AZURE_OPENAI_ENDPOINT
+      apiKeyEnvVar: AZURE_OPENAI_API_KEY
+    - name: openai
+      type: openai
+      enabled: false
+      apiKeyEnvVar: OPENAI_API_KEY
+  models:
+    default:
+      name: default
+      version: "0.0.0-dev"
+      provider: azure-openai
+      deploymentEnvVar: AZURE_OPENAI_DEPLOYMENT
+  safety:
+    piiRedaction: true
+    promptLogging: false

@@ -1,0 +1,56 @@
+<section class="hero">
+  <div class="hero__content">
+    <div class="badge">FinTech Demo</div>
+    <h1 class="hero__title">NEXUS Loan Engine</h1>
+    <p class="hero__subtitle">
+      A guided product experience for loan decision automation. Enter applicant details, run the decision engine, and review risk, trust, and outcomes in plain language.
+    </p>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary" routerLink="/loan/apply">Apply for Loan</a>
+      <a class="btn btn--ghost" routerLink="/loan/history">View History</a>
+    </div>
+  </div>
+
+  <div class="hero__panel">
+    <h2 class="panel__title">What you'll see</h2>
+    <ol class="steps">
+      <li class="steps__item">
+        <div class="steps__name">Apply</div>
+        <div class="steps__desc">Enter applicant and loan details in a simple form.</div>
+      </li>
+      <li class="steps__item">
+        <div class="steps__name">Evaluate</div>
+        <div class="steps__desc">Watch the decision engine run step by step with clear progress.</div>
+      </li>
+      <li class="steps__item">
+        <div class="steps__name">Decision</div>
+        <div class="steps__desc">See outcome (Approved, Review, or Rejected), confidence, and reasons.</div>
+      </li>
+      <li class="steps__item">
+        <div class="steps__name">Risk & Trust</div>
+        <div class="steps__desc">Review AI risk analysis, trust indicators, and suggested actions.</div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="grid">
+  <a class="card" routerLink="/loan/apply">
+    <div class="card__kicker">Start</div>
+    <div class="card__title">Apply</div>
+    <div class="card__body">Enter applicant and loan details, then evaluate.</div>
+  </a>
+
+  <a class="card" routerLink="/loan/risk">
+    <div class="card__kicker">Signals</div>
+    <div class="card__title">Risk</div>
+    <div class="card__body">AI risk analysis, trust indicators, and system confidence.</div>
+  </a>
+
+  <a class="card" routerLink="/loan/history">
+    <div class="card__kicker">Review</div>
+    <div class="card__title">History</div>
+    <div class="card__body">Previous loan decisions stored in memory. Replay any run.</div>
+  </a>
+</section>

@@ -1,0 +1,21 @@
+# ENV PACK: qa
+# Precedence: defaults → env pack → secrets → runtime
+env: qa
+observability:
+  otel:
+    # Override point: can be overridden by runtime env vars.
+    collectorEndpoint: http://otel-collector.observability:4317
+    serviceName: nexus-engine
+    resourceAttributes:
+      deployment.environment: qa
+  metrics:
+    enabled: true
+    scrape:
+      prometheusPath: /metrics
+  tracing:
+    enabled: true
+    # qa samples more than prod to aid validation while remaining representative.
+    samplingRatio: 0.1
+  logging:
+    format: json
+    level: info

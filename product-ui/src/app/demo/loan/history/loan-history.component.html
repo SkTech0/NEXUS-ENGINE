@@ -1,0 +1,57 @@
+<div class="page" *ngIf="records$ | async as records">
+  <div class="page__header">
+    <div>
+      <div class="kicker">History</div>
+      <h1 class="title">Previous Loan Decisions</h1>
+      <p class="subtitle">Stored in-memory for this demo session. Replay any run.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/loan/apply">New Application</a>
+      <button class="btn btn--danger" (click)="clear()" [disabled]="!records.length">Clear</button>
+    </div>
+  </div>
+
+  <div class="empty" *ngIf="!records.length">
+    <div class="empty__title">No loan decisions yet</div>
+    <div class="empty__body">Go to Apply, enter applicant details, and click Evaluate Loan.</div>
+    <a class="btn btn--primary" routerLink="/loan/apply">Go to Apply</a>
+  </div>
+
+  <div class="timeline" *ngIf="records.length">
+    <div class="run" *ngFor="let r of records">
+      <div class="run__left">
+        <div class="run__title">{{ r.applicantName }} · {{ r.loanAmount | number }}</div>
+        <div class="run__meta">
+          <span class="pill" [ngClass]="outcomeClass(r.outcome)">{{ r.outcome }}</span>
+          <span
+            class="pill pill--status"
+            [ngClass]="{
+              'pill--ok': r.status === 'completed',
+              'pill--bad': r.status === 'failed',
+              'pill--running': r.status === 'running'
+            }"
+          >
+            {{ r.status === 'completed' ? 'Completed' : r.status === 'failed' ? 'Failed' : 'Running' }}
+          </span>
+          <span class="dot"></span>
+          <span class="time">{{ formatTime(r.createdAt) }}</span>
+          <span class="dot" *ngIf="r.confidence != null"></span>
+          <span class="conf" *ngIf="r.confidence != null">
+            Confidence: {{ (r.confidence! * 100) | number: '1.0-0' }}%
+          </span>
+          <span class="dot" *ngIf="r.riskScore != null"></span>
+          <span class="risk" *ngIf="r.riskScore != null">Risk: {{ r.riskScore }}</span>
+        </div>
+      </div>
+
+      <div class="run__right">
+        <button class="btn btn--primary" (click)="openRecord(r)">Open</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a class="link" routerLink="/loan">Back to Loan home</a>
+  </div>
+</div>

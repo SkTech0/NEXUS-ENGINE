@@ -1,0 +1,82 @@
+<div class="page" *ngIf="state$ | async as s">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Trust</div>
+      <h1 class="title">Health & Risk Signals</h1>
+      <p class="subtitle">A product-facing view of system readiness and confidence.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/decision">Back to Decision</a>
+      <button class="btn btn--primary" (click)="refresh()">{{ loading ? 'Refreshing…' : 'Refresh' }}</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <div class="card__title">Trust status</div>
+      <div class="pillrow">
+        <div
+          class="pill"
+          [ngClass]="{
+            'pill--ok': (health?.healthy ?? (health?.status === 'ok')) === true,
+            'pill--bad': !!error,
+            'pill--idle': (health?.healthy ?? (health?.status === 'ok')) !== true && !error
+          }"
+        >
+          {{
+            error
+              ? 'Unavailable'
+              : (health?.healthy ?? (health?.status === 'ok'))
+                ? 'Healthy'
+                : health
+                  ? 'Degraded'
+                  : 'Unknown'
+          }}
+        </div>
+        <div class="meta" *ngIf="health?.message">{{ health?.message }}</div>
+        <div class="meta" *ngIf="error">{{ error }}</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__title">Confidence score</div>
+      <div class="score" *ngIf="confidenceFrom(s.results) as c; else noScore">
+        <div class="score__value">{{ (c * 100) | number: '1.0-0' }}%</div>
+        <div class="score__label">Combined confidence signal</div>
+      </div>
+      <ng-template #noScore>
+        <div class="meta">No confidence score provided by the services yet.</div>
+      </ng-template>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card__title">Risk indicators</div>
+    <div class="indicators">
+      <div class="indicator" *ngFor="let i of indicatorsFrom(s.results)">
+        <div class="indicator__top">
+          <div class="indicator__name">{{ i.name }}</div>
+          <div
+            class="chip"
+            [ngClass]="{
+              'chip--low': i.level === 'low',
+              'chip--med': i.level === 'medium',
+              'chip--high': i.level === 'high'
+            }"
+          >
+            {{ i.level === 'low' ? 'Low' : i.level === 'high' ? 'High' : 'Medium' }}
+          </div>
+        </div>
+        <div class="indicator__msg">{{ i.message }}</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <a class="link" routerLink="/history">See history</a>
+    <span class="dot"></span>
+    <a class="link" routerLink="/playground">Start a new run</a>
+  </div>
+</div>
+

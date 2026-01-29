@@ -1,0 +1,115 @@
+# Nexus Engine — Security pipeline
+# Dependency scanning, SAST, secret scanning, vulnerability scanning
+
+name: Security
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: "0 6 * * 1"  # Weekly Monday 06:00 UTC
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@4
+      - uses: actions/dependency-review-action@4
+        with:
+          fail-on-severity: high
+
+  npm-audit:
+    name: npm Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@4
+      - uses: actions/setup-node@4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: npm audit
+        run: npm audit --audit-level=high 2>/dev/null || true
+
+  dotnet-audit:
+    name: .NET Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@4
+      - uses: actions/setup-dotnet@4
+        with:
+          dotnet-version: "10.0.x"
+      - name: .NET list package vulnerabilities
+        run: |
+          dotnet list engine-api/src/EngineApi/EngineApi.csproj package --vulnerable --include-transitive 2>/dev/null || true
+
+  pip-audit:
+    name: pip Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@4
+      - uses: actions/setup-python@5
+        with:
+          python-version: "3.11"
+      - name: pip audit
+        run: |
+          pip install pip-audit 2>/dev/null || true
+          pip-audit -r requirements-test.txt 2>/dev/null || true
+          for f in engine-*/requirements.txt engine-*/pyproject.toml 2>/dev/null; do
+            [ -f "$f" ] && pip-audit -r "$f" 2>/dev/null || true
+          done
+
+  codeql:
+    name: CodeQL (SAST)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@3
+        with:
+          languages: javascript, python, csharp
+          queries: security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@3
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@3
+        with:
+          category: "/language:javascript,csharp,python"
+
+  secret-scanning:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+  trivy-fs:
+    name: Trivy FS scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@4
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          severity: "CRITICAL,HIGH"
+        continue-on-error: true

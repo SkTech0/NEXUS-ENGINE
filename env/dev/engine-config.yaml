@@ -1,0 +1,21 @@
+env: dev
+engine:
+  name: nexus-engine
+  mode: dev
+  compatibility:
+    strict: true
+  endpoints:
+    apiBaseUrl: https://dev-api.nexus-engine.example.com
+    uiBaseUrl: https://dev.nexus-engine.example.com
+  runtime:
+    maxConcurrency: 200
+    requestTimeoutMs: 30000
+data:
+  provider: cloud
+  connectionStringRef: ConnectionStrings__Primary
+ai:
+  modelRegistry: api
+  modelRegistryEndpoint: https://dev-api.nexus-engine.example.com/models
+featureFlags:
+  provider: file
+  configPath: ./feature-flags/flag-config.yaml

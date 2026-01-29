@@ -1,0 +1,69 @@
+# Canary deployment workflow (template)
+#
+# Purpose:
+# - Roll out a release candidate to a small percentage of traffic, verify, then ramp.
+# - Keep rollback ready at every step.
+#
+# Notes:
+# - This is a scaffold and intentionally avoids coupling to infra manifests.
+# - Integrate with your deployment system (k8s, service mesh, ingress, etc.) externally.
+#
+name: nexus-engine-canary-template
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Target environment (typically prod)"
+        required: true
+        type: choice
+        options: [staging, prod]
+      canary_percent:
+        description: "Initial canary traffic percentage"
+        required: true
+        default: "5"
+      step_percent:
+        description: "Traffic increment per step"
+        required: true
+        default: "10"
+      max_percent:
+        description: "Max traffic before full rollout"
+        required: true
+        default: "50"
+
+jobs:
+  deploy_canary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy canary (template)
+        run: |
+          echo "Deploy canary version to ${{ inputs.target_env }}"
+          echo "Route ${{ inputs.canary_percent }}% traffic to canary"
+
+  verify_canary:
+    needs: [deploy_canary]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify metrics and SLOs (template)
+        run: |
+          echo "Check error rate, latency, saturation, and key business/engine metrics"
+          echo "Fail (and rollback) if thresholds exceed policy"
+
+  ramp:
+    needs: [verify_canary]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ramp traffic (template)
+        run: |
+          echo "Increase traffic by ${{ inputs.step_percent }}% steps up to ${{ inputs.max_percent }}%"
+          echo "Pause between steps for observation"
+
+  finalize:
+    needs: [ramp]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Full rollout (template)
+        run: |
+          echo "Shift 100% traffic to new version"
+          echo "Keep previous version available for fast rollback"
+

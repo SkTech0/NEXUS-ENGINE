@@ -1,0 +1,27 @@
+# ENV PACK: prod (hardened + locked)
+# Precedence: defaults → env pack → secrets → runtime
+env: prod
+security:
+  auth:
+    mode: oidc
+    jwt:
+      issuer: https://idp.example.com/
+      audience: nexus-engine
+      jwksUrl: https://idp.example.com/.well-known/jwks.json
+  tls:
+    required: true
+  headers:
+    hsts:
+      enabled: true
+      # 2 years typical for prod; confirm with security policy.
+      maxAgeSeconds: 63072000
+    contentSecurityPolicy:
+      enabled: true
+      policy: "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
+  rateLimiting:
+    enabled: true
+    # Prod is locked down; tune based on capacity and abuse patterns.
+    requestsPerMinute: 180
+  audit:
+    enabled: true
+    redactSecrets: true

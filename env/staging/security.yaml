@@ -1,0 +1,27 @@
+# ENV PACK: staging (prod-like)
+# Precedence: defaults → env pack → secrets → runtime
+env: staging
+security:
+  auth:
+    mode: oidc
+    jwt:
+      issuer: https://staging-idp.example.com/
+      audience: nexus-engine
+      jwksUrl: https://staging-idp.example.com/.well-known/jwks.json
+  tls:
+    required: true
+  headers:
+    hsts:
+      enabled: true
+      # 30 days; staging validates policy without long-lived lock-in.
+      maxAgeSeconds: 2592000
+    contentSecurityPolicy:
+      enabled: true
+      policy: "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
+  rateLimiting:
+    enabled: true
+    # staging matches prod envelope.
+    requestsPerMinute: 300
+  audit:
+    enabled: true
+    redactSecrets: true

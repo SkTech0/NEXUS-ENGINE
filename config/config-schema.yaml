@@ -1,0 +1,213 @@
+# Nexus Engine - Configuration Schema (scaffolding)
+#
+# Purpose:
+# - Define a consistent, environment-agnostic schema for config resolution.
+# - Document precedence order and env var bindings.
+# - Provide a single reference point for config + secrets governance.
+#
+# NOTE:
+# - This is a documentation + validation scaffold.
+# - It does not change runtime behavior unless a loader is explicitly wired in.
+#
+# Precedence order (highest wins):
+#   1) defaults
+#   2) env pack files (env/<env>/...)
+#   3) secrets providers (Vault / Azure Key Vault / AWS Secrets Manager)
+#   4) runtime overrides (ENV / CLI / metadata)
+#
+# Env selection:
+#   - NEXUS_ENV: local | dev | qa | staging | prod
+#
+schemaVersion: 1
+
+bindings:
+  envVarConvention: "Section__Subsection__Key"
+  examples:
+    - name: ConnectionStrings__Primary
+      mapsTo: appsettings.ConnectionStrings.Primary
+    - name: Secrets__Provider
+      mapsTo: appsettings.Secrets.Provider
+
+documents:
+  appsettings.json:
+    format: json
+    keys:
+      Environment: string
+      App:
+        Name: string
+        Instance: string
+      Logging:
+        LogLevel:
+          Default: string
+          Microsoft.AspNetCore: string
+      AllowedHosts: string
+      Cors:
+        AllowedOrigins: [string]
+      ConnectionStrings:
+        Primary:
+          type: string
+          secret: true
+          envVar: ConnectionStrings__Primary
+      Secrets:
+        Provider:
+          type: string
+          enum: ["env", "vault", "azurekeyvault", "awssecretsmanager"]
+          envVar: Secrets__Provider
+        Vault:
+          Address:
+            type: string
+            envVar: Secrets__Vault__Address
+          AuthMethod:
+            type: string
+            enum: ["token", "kubernetes", "approle"]
+          TokenEnvVar: { type: string, optional: true }
+          KubernetesRole: { type: string, optional: true }
+          KvMount: string
+          Prefix: string
+        AzureKeyVault:
+          VaultUrl: string
+          TenantIdEnvVar: string
+          ClientIdEnvVar: string
+          ClientSecretEnvVar: string
+        AwsSecretsManager:
+          Region: string
+          AccessKeyIdEnvVar: string
+          SecretAccessKeyEnvVar: string
+      Observability:
+        Otel:
+          ServiceName: string
+          Endpoint:
+            type: string
+            envVar: Observability__Otel__Endpoint
+          TracesSampler: string
+          TracesSampleRatio: number
+
+  engine-config.yaml:
+    format: yaml
+    keys:
+      env: string
+      engine:
+        name: string
+        mode: string
+        compatibility:
+          strict: boolean
+        endpoints:
+          apiBaseUrl: string
+          uiBaseUrl: string
+        runtime:
+          maxConcurrency: number
+          requestTimeoutMs: number
+      data:
+        provider: string
+        connectionStringRef:
+          type: string
+          envVar: ConnectionStrings__Primary
+      ai:
+        modelRegistry:
+          type: string
+          enum: ["file", "api"]
+        modelRegistryPath: { type: string, optional: true }      # legacy/local
+        modelRegistryEndpoint: { type: string, optional: true }  # dev+ environments
+      featureFlags:
+        provider: string
+        configPath: string
+
+  ai-config.yaml:
+    format: yaml
+    keys:
+      env: string
+      ai:
+        providers:
+          - name: string
+            type: string
+            enabled: boolean
+            endpointEnvVar: { type: string, optional: true }
+            apiKeyEnvVar: { type: string, optional: true }
+        models:
+          default:
+            name: string
+            version: string
+            provider: string
+            path: { type: string, optional: true }              # local
+            deploymentEnvVar: { type: string, optional: true }   # cloud
+        safety:
+          piiRedaction: boolean
+          promptLogging: boolean
+
+  observability.yaml:
+    format: yaml
+    keys:
+      env: string
+      observability:
+        otel:
+          collectorEndpoint: string
+          serviceName: string
+          resourceAttributes: map
+        metrics:
+          enabled: boolean
+          scrape:
+            prometheusPath: string
+        tracing:
+          enabled: boolean
+          samplingRatio: number
+        logging:
+          format: string
+          level: string
+
+  security.yaml:
+    format: yaml
+    keys:
+      env: string
+      security:
+        auth:
+          mode: string
+          jwt:
+            issuer: string
+            audience: string
+            jwksUrl: string
+        tls:
+          required: boolean
+        headers:
+          hsts:
+            enabled: boolean
+            maxAgeSeconds: { type: number, optional: true }
+          contentSecurityPolicy:
+            enabled: boolean
+            policy: { type: string, optional: true }
+        rateLimiting:
+          enabled: boolean
+          requestsPerMinute: { type: number, optional: true }
+        audit:
+          enabled: boolean
+          redactSecrets: boolean
+
+  infra.yaml:
+    format: yaml
+    keys:
+      env: string
+      infra:
+        platform: string
+        namespace: string
+        service:
+          replicas: number
+          resources:
+            requests:
+              cpu: string
+              memory: string
+            limits:
+              cpu: string
+              memory: string
+        ingress:
+          enabled: boolean
+          className: { type: string, optional: true }
+          host: { type: string, optional: true }
+          tlsSecretName: { type: string, optional: true }
+        autoscaling:
+          enabled: boolean
+          minReplicas: { type: number, optional: true }
+          maxReplicas: { type: number, optional: true }
+          targetCpuUtilizationPercent: { type: number, optional: true }
+        certManager:
+          enabled: boolean
+          clusterIssuer: { type: string, optional: true }
+

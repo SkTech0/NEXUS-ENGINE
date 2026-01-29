@@ -1,0 +1,29 @@
+# ENV PACK: qa
+# This file is metadata about the intended deployment envelope.
+# It is NOT infra-as-code and must not be treated as a source of truth for Terraform/Helm/K8s manifests.
+env: qa
+infra:
+  platform: kubernetes
+  namespace: nexus-qa
+  service:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+  ingress:
+    enabled: true
+    className: nginx
+    host: qa-api.nexus-engine.example.com
+    tlsSecretName: nexus-qa-tls
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCpuUtilizationPercent: 70
+  certManager:
+    enabled: true
+    clusterIssuer: letsencrypt-staging

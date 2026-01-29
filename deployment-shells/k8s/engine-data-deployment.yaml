@@ -1,0 +1,65 @@
+# Engine-data service shell — independent K8s deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine-data
+  labels:
+    app: engine-data
+    tier: service-shell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: engine-data
+  template:
+    metadata:
+      labels:
+        app: engine-data
+        tier: service-shell
+    spec:
+      containers:
+        - name: engine-data
+          image: nexus-engine-data:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3003
+              name: http
+          env:
+            - name: ENGINE_DATA_SERVICE_PORT
+              value: "3003"
+            - name: NEXUS_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: nexus-env
+                  key: NEXUS_ENV
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3003
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3003
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: engine-data
+  labels:
+    app: engine-data
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3003
+      targetPort: 3003
+      protocol: TCP
+      name: http
+  selector:
+    app: engine-data

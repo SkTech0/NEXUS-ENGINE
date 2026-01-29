@@ -1,0 +1,28 @@
+# Jaeger — all-in-one config for Nexus Engine tracing
+# Use with: jaeger-all-in-one --config-file=jaeger.yml
+
+collector:
+  zipkin:
+    http-port: 9411
+
+query:
+  base-path: /jaeger
+  http-server:
+    http-port: 16686
+
+agent:
+  http-server:
+    http-port: 5778
+  zipkin:
+    http-port: 9411
+
+storage:
+  type: memory
+  options:
+    memory:
+      max-traces: 100000
+
+metrics:
+  backend: prometheus
+  prometheus:
+    server-url: http://prometheus:9090

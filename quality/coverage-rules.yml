@@ -1,0 +1,33 @@
+# Coverage quality gates — Nexus Engine
+
+defaults:
+  global:
+    min_line_coverage: 80
+    min_branch_coverage: 70
+    min_function_coverage: 75
+    fail_under_percent: 80
+
+engines:
+  product-ui:
+    min_line_coverage: 50
+    min_branch_coverage: 40
+  engine-api:
+    min_line_coverage: 80
+    min_branch_coverage: 70
+  engine-ai:
+  engine-data:
+  engine-intelligence:
+  engine-optimization:
+  engine-distributed:
+  engine-trust:
+
+rules:
+  - name: coverage_above_threshold
+    description: "Coverage must exceed fail_under_percent"
+    condition: "coverage.line >= fail_under_percent"
+  - name: tests_mandatory
+    description: "All tests must pass"
+    condition: "test_pass == true"
+  - name: no_critical_gaps
+    description: "No uncovered critical paths (manual review)"
+    condition: "critical_uncovered == 0"

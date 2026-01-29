@@ -1,0 +1,28 @@
+# ENV PACK: prod (hardened + locked)
+# Config hierarchy (highest wins): defaults → env pack → secrets → runtime
+# Secrets injection point:
+# - `data.connectionStringRef` resolves from env var `ConnectionStrings__Primary` or via secrets provider.
+env: prod
+engine:
+  name: nexus-engine
+  mode: prod
+  compatibility:
+    # prod is strict: reject incompatible versions and unsafe schemas.
+    strict: true
+  endpoints:
+    apiBaseUrl: https://api.nexus-engine.example.com
+    uiBaseUrl: https://nexus-engine.example.com
+  runtime:
+    # prod tuned for capacity; adjust via runtime override during incidents.
+    maxConcurrency: 800
+    requestTimeoutMs: 30000
+data:
+  provider: cloud
+  connectionStringRef: ConnectionStrings__Primary
+ai:
+  modelRegistry: api
+  modelRegistryEndpoint: https://api.nexus-engine.example.com/models
+featureFlags:
+  provider: file
+  # In prod, feature flags should be managed via controlled releases.
+  configPath: ./feature-flags/flag-config.yaml

@@ -1,0 +1,17 @@
+env: local
+observability:
+  otel:
+    collectorEndpoint: http://localhost:4317
+    serviceName: nexus-engine
+    resourceAttributes:
+      deployment.environment: local
+  metrics:
+    enabled: true
+    scrape:
+      prometheusPath: /metrics
+  tracing:
+    enabled: true
+    samplingRatio: 1.0
+  logging:
+    format: json
+    level: info

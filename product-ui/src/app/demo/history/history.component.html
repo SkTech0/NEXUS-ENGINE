@@ -1,0 +1,61 @@
+<div class="page" *ngIf="runs$ | async as runs">
+  <div class="page__header">
+    <div>
+      <div class="kicker">History</div>
+      <h1 class="title">Previous Runs</h1>
+      <p class="subtitle">Stored in-memory for this demo session.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/playground">New Run</a>
+      <button class="btn btn--danger" (click)="clear()" [disabled]="!runs.length">Clear</button>
+    </div>
+  </div>
+
+  <div class="empty" *ngIf="!runs.length">
+    <div class="empty__title">No runs yet</div>
+    <div class="empty__body">Start in the Playground to run the decision flow.</div>
+    <a class="btn btn--primary" routerLink="/playground">Go to Playground</a>
+  </div>
+
+  <div class="timeline" *ngIf="runs.length">
+    <div class="run" *ngFor="let r of runs">
+      <div class="run__left">
+        <div class="run__title">{{ r.summary.title }}</div>
+        <div class="run__meta">
+          <span
+            class="pill"
+            [ngClass]="{
+              'pill--ok': r.summary.status === 'completed',
+              'pill--bad': r.summary.status === 'failed',
+              'pill--running': r.summary.status === 'running'
+            }"
+          >
+            {{
+              r.summary.status === 'completed'
+                ? 'Completed'
+                : r.summary.status === 'failed'
+                  ? 'Needs attention'
+                  : 'Running'
+            }}
+          </span>
+          <span class="dot"></span>
+          <span class="time">{{ formatTime(r.summary.createdAt) }}</span>
+          <span class="dot" *ngIf="r.summary.confidence != null"></span>
+          <span class="conf" *ngIf="r.summary.confidence != null">
+            Confidence: {{ (r.summary.confidence! * 100) | number: '1.0-0' }}%
+          </span>
+        </div>
+      </div>
+
+      <div class="run__right">
+        <button class="btn btn--primary" (click)="openRun(r)">Open</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a class="link" routerLink="/">Back to landing</a>
+  </div>
+</div>
+

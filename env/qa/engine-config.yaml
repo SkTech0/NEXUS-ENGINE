@@ -1,0 +1,34 @@
+# ENV PACK: qa
+# Config hierarchy (highest wins): defaults → env pack → secrets → runtime
+# Secrets injection point:
+# - `data.connectionStringRef` resolves from env var `ConnectionStrings__Primary` or via secrets provider.
+env: qa
+engine:
+  name: nexus-engine
+  # Override point: mode controls safety/strictness defaults in consumers.
+  # qa = strict validation posture (no permissive dev bypasses).
+  mode: qa
+  compatibility:
+    # qa enforces strict compatibility checks.
+    strict: true
+  endpoints:
+    # Override points (runtime may override via env vars in deployment):
+    apiBaseUrl: https://qa-api.nexus-engine.example.com
+    uiBaseUrl: https://qa.nexus-engine.example.com
+  runtime:
+    # qa is performance-representative but not maxed like prod.
+    maxConcurrency: 300
+    requestTimeoutMs: 30000
+data:
+  provider: cloud
+  # Env var binding: ConnectionStrings__Primary
+  connectionStringRef: ConnectionStrings__Primary
+ai:
+  # qa uses model registry via API (prod-like).
+  modelRegistry: api
+  # Secrets injection point: if registry requires auth, inject via secrets provider.
+  modelRegistryEndpoint: https://qa-api.nexus-engine.example.com/models
+featureFlags:
+  provider: file
+  # Override point: mount/replace at deploy time.
+  configPath: ./feature-flags/flag-config.yaml

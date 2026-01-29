@@ -1,0 +1,20 @@
+# ENV PACK: prod (hardened + locked)
+# Precedence: defaults → env pack → secrets → runtime
+env: prod
+observability:
+  otel:
+    collectorEndpoint: http://otel-collector.observability:4317
+    serviceName: nexus-engine
+    resourceAttributes:
+      deployment.environment: prod
+  metrics:
+    enabled: true
+    scrape:
+      prometheusPath: /metrics
+  tracing:
+    enabled: true
+    # Prod sampling tuned for cost and SLO while preserving debugging capability.
+    samplingRatio: 0.02
+  logging:
+    format: json
+    level: info

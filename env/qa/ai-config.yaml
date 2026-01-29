@@ -1,0 +1,28 @@
+# ENV PACK: qa
+# Precedence: defaults → env pack → secrets → runtime
+# Secrets injection points:
+# - Provider keys must be injected via env vars / secret providers (never commit secrets).
+env: qa
+ai:
+  providers:
+    - name: azure-openai
+      type: azure-openai
+      # qa can be enabled for validation; keep disabled by default until keys are injected.
+      enabled: false
+      endpointEnvVar: AZURE_OPENAI_ENDPOINT
+      apiKeyEnvVar: AZURE_OPENAI_API_KEY
+    - name: openai
+      type: openai
+      enabled: false
+      apiKeyEnvVar: OPENAI_API_KEY
+  models:
+    default:
+      name: default
+      # Override point: pin model version per environment for reproducibility.
+      version: "0.0.0-qa"
+      provider: azure-openai
+      deploymentEnvVar: AZURE_OPENAI_DEPLOYMENT
+  safety:
+    # qa is strict: redact PII; disable prompt logging by default.
+    piiRedaction: true
+    promptLogging: false

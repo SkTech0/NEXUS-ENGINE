@@ -1,0 +1,26 @@
+# ENV PACK: qa
+# Precedence: defaults → env pack → secrets → runtime
+env: qa
+security:
+  auth:
+    # qa uses real auth to validate policy (no dev shortcuts).
+    mode: oidc
+    jwt:
+      issuer: https://qa-idp.example.com/
+      audience: nexus-engine
+      jwksUrl: https://qa-idp.example.com/.well-known/jwks.json
+  tls:
+    required: true
+  headers:
+    hsts:
+      enabled: true
+      maxAgeSeconds: 604800
+    contentSecurityPolicy:
+      enabled: true
+      policy: "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
+  rateLimiting:
+    enabled: true
+    requestsPerMinute: 300
+  audit:
+    enabled: true
+    redactSecrets: true

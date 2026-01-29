@@ -1,0 +1,20 @@
+env: local
+security:
+  auth:
+    mode: development
+    jwt:
+      issuer: http://localhost
+      audience: nexus-engine
+      jwksUrl: http://localhost/.well-known/jwks.json
+  tls:
+    required: false
+  headers:
+    hsts:
+      enabled: false
+    contentSecurityPolicy:
+      enabled: false
+  rateLimiting:
+    enabled: false
+  audit:
+    enabled: true
+    redactSecrets: true

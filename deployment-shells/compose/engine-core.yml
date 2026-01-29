@@ -1,0 +1,20 @@
+# Engine-core service shell — independent Compose service.
+# Run from repo root: docker compose -f deployment-shells/compose/engine-core.yml up -d
+services:
+  engine-core:
+    build:
+      context: ../..
+      dockerfile: deployment-shells/docker/engine-core.Dockerfile
+    ports:
+      - "${ENGINE_CORE_SERVICE_PORT:-3001}:3001"
+    environment:
+      - ENGINE_CORE_SERVICE_PORT=3001
+      - ENGINE_CORE_SERVICE_HOST=0.0.0.0
+      - NEXUS_ENV=${NEXUS_ENV:-development}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped

@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "projects": {
+    "engine-core": "engine-core",
+    "engine-distributed": "engine-distributed",
+    "engine-data": "engine-data",
+    "engine-intelligence": "engine-intelligence",
+    "engine-optimization": "engine-optimization",
+    "engine-ai": "engine-ai",
+    "engine-trust": "engine-trust",
+    "engine-api": "engine-api",
+    "product-ui": "product-ui",
+    "saas-layer": "saas-layer"
+  }
+}

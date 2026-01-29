@@ -1,0 +1,29 @@
+# ENV PACK: prod (hardened + locked)
+# This file is metadata about the intended deployment envelope.
+# It is NOT infra-as-code and must not be treated as a source of truth for Terraform/Helm/K8s manifests.
+env: prod
+infra:
+  platform: kubernetes
+  namespace: nexus-prod
+  service:
+    replicas: 5
+    resources:
+      requests:
+        cpu: "2"
+        memory: 2Gi
+      limits:
+        cpu: "6"
+        memory: 8Gi
+  ingress:
+    enabled: true
+    className: nginx
+    host: api.nexus-engine.example.com
+    tlsSecretName: nexus-prod-tls
+  autoscaling:
+    enabled: true
+    minReplicas: 5
+    maxReplicas: 50
+    targetCpuUtilizationPercent: 60
+  certManager:
+    enabled: true
+    clusterIssuer: letsencrypt-prod

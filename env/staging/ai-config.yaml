@@ -1,0 +1,26 @@
+# ENV PACK: staging (prod-like)
+# Precedence: defaults → env pack → secrets → runtime
+# Secrets injection points:
+# - Provider keys must be injected via env vars / secret providers (never commit secrets).
+env: staging
+ai:
+  providers:
+    - name: azure-openai
+      type: azure-openai
+      enabled: false
+      endpointEnvVar: AZURE_OPENAI_ENDPOINT
+      apiKeyEnvVar: AZURE_OPENAI_API_KEY
+    - name: openai
+      type: openai
+      enabled: false
+      apiKeyEnvVar: OPENAI_API_KEY
+  models:
+    default:
+      name: default
+      # Override point: pin model version aligned with prod candidate.
+      version: "0.0.0-staging"
+      provider: azure-openai
+      deploymentEnvVar: AZURE_OPENAI_DEPLOYMENT
+  safety:
+    piiRedaction: true
+    promptLogging: false

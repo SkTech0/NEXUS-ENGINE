@@ -1,0 +1,23 @@
+# Security quality gates — Nexus Engine
+
+rules:
+  - name: no_critical_vulns
+    description: "No critical vulnerabilities in deps"
+    condition: "critical_count == 0"
+  - name: no_high_vulns
+    description: "No high vulnerabilities (or allow with exception)"
+    condition: "high_count == 0"
+  - name: sast_pass
+    description: "SAST (CodeQL) must pass"
+    condition: "sast_failures == 0"
+  - name: secret_scan_clean
+    description: "No secrets detected"
+    condition: "secrets_found == 0"
+
+sources:
+  - npm_audit
+  - dotnet_list_package_vulnerable
+  - pip_audit
+  - trivy
+  - codeql
+  - gitleaks

@@ -1,0 +1,23 @@
+# Performance quality gates — Nexus Engine
+
+rules:
+  - name: api_latency_p95
+    description: "API p95 latency < 2s"
+    metric: "http_request_duration_p95_seconds"
+    threshold: 2.0
+  - name: inference_latency
+    description: "Inference latency < 5s"
+    metric: "nexus_engine_inference_latency_seconds"
+    threshold: 5.0
+  - name: optimization_latency
+    description: "Optimization latency < 3s"
+    metric: "nexus_engine_optimization_latency_seconds"
+    threshold: 3.0
+  - name: build_time
+    description: "CI build < 15 min"
+    metric: "ci_build_duration_minutes"
+    threshold: 15
+
+gates:
+  - load_test_pass: true
+  - benchmark_regression: false

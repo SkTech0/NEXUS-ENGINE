@@ -1,0 +1,53 @@
+# OpenAPI contract — Trust API subset
+openapi: 3.0.3
+info:
+  title: Nexus Trust API
+  version: 0.0.1
+
+paths:
+  /api/Trust/verify:
+    post:
+      summary: Verify
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                claimType: { type: string }
+                payload: {}
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid: { type: boolean }
+                  message: { type: string, nullable: true }
+  /api/Trust/score/{entityId}:
+    get:
+      summary: Get score
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entityId: { type: string }
+                  score: { type: number }
+                  source: { type: string, nullable: true }
+  /api/Trust/health:
+    get:
+      summary: Health
+      responses:
+        "200":
+          description: OK

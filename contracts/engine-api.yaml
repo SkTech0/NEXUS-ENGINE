@@ -1,0 +1,164 @@
+# OpenAPI contract — engine-api (Health, Engine, Intelligence, Optimization, AI, Trust)
+openapi: 3.0.3
+info:
+  title: Nexus Engine API
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:5000
+    description: local
+
+paths:
+  /api/Health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: healthy }
+                  service: { type: string, example: engine-api }
+
+  /api/Engine:
+    get:
+      summary: Engine status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string }
+                  result: {}
+                  message: { type: string, nullable: true }
+    post:
+      summary: Execute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action: { type: string }
+                parameters: { type: object }
+      responses:
+        "200":
+          description: OK
+
+  /api/Intelligence/evaluate:
+    post:
+      summary: Evaluate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context: { type: string }
+                inputs: { type: object }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  outcome: { type: string }
+                  confidence: { type: number }
+                  payload: {}
+
+  /api/Optimization/optimize:
+    post:
+      summary: Optimize
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetId: { type: string }
+                objective: { type: string }
+                constraints: { type: object }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  targetId: { type: string }
+                  value: { type: number }
+                  feasible: { type: boolean }
+
+  /api/AI/infer:
+    post:
+      summary: Infer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [modelId]
+              properties:
+                modelId: { type: string }
+                inputs: { type: object }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  outputs: { type: object }
+                  latencyMs: { type: number }
+                  modelId: { type: string }
+
+  /api/AI/health:
+    get:
+      summary: AI health
+      responses:
+        "200":
+          description: OK
+
+  /api/Trust/health:
+    get:
+      summary: Trust health
+      responses:
+        "200":
+          description: OK
+
+  /api/Trust/verify:
+    post:
+      summary: Verify
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                claimType: { type: string }
+                payload: {}
+      responses:
+        "200":
+          description: OK
+
+  /api/Trust/score/{entityId}:
+    get:
+      summary: Get trust score
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK

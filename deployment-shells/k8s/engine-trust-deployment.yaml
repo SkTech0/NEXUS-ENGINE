@@ -1,0 +1,65 @@
+# Engine-trust service shell — independent K8s deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine-trust
+  labels:
+    app: engine-trust
+    tier: service-shell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: engine-trust
+  template:
+    metadata:
+      labels:
+        app: engine-trust
+        tier: service-shell
+    spec:
+      containers:
+        - name: engine-trust
+          image: nexus-engine-trust:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3006
+              name: http
+          env:
+            - name: ENGINE_TRUST_SERVICE_PORT
+              value: "3006"
+            - name: NEXUS_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: nexus-env
+                  key: NEXUS_ENV
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3006
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3006
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: engine-trust
+  labels:
+    app: engine-trust
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3006
+      targetPort: 3006
+      protocol: TCP
+      name: http
+  selector:
+    app: engine-trust

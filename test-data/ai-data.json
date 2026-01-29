@@ -1,0 +1,8 @@
+{
+  "inference_requests": [
+    { "modelId": "default", "inputs": { "x": 1 } },
+    { "modelId": "default", "inputs": { "text": "hello" } },
+    { "modelId": "default", "inputs": { "a": 1, "b": 2 } }
+  ],
+  "expected_output_keys": ["outputs", "latencyMs", "modelId"]
+}

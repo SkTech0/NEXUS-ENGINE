@@ -1,0 +1,65 @@
+# Engine-ai service shell — independent K8s deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine-ai
+  labels:
+    app: engine-ai
+    tier: service-shell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: engine-ai
+  template:
+    metadata:
+      labels:
+        app: engine-ai
+        tier: service-shell
+    spec:
+      containers:
+        - name: engine-ai
+          image: nexus-engine-ai:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3002
+              name: http
+          env:
+            - name: ENGINE_AI_SERVICE_PORT
+              value: "3002"
+            - name: NEXUS_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: nexus-env
+                  key: NEXUS_ENV
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3002
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: engine-ai
+  labels:
+    app: engine-ai
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3002
+      targetPort: 3002
+      protocol: TCP
+      name: http
+  selector:
+    app: engine-ai

@@ -1,0 +1,23 @@
+<section class="engine-monitor">
+  <header class="engine-monitor__header">
+    <h2>Engine Monitor</h2>
+    <button type="button" (click)="refreshStatus()" [disabled]="loading">Refresh</button>
+  </header>
+  @if (error) {
+    <div class="engine-monitor__error">{{ error }}</div>
+  }
+  @if (loading && !status) {
+    <p>Loading…</p>
+  }
+  @if (status) {
+    <div class="engine-monitor__status">
+      <span class="badge">Status: {{ status.status }}</span>
+    </div>
+  }
+  <div class="engine-monitor__actions">
+    <button type="button" (click)="execute()" [disabled]="loading">Execute ping</button>
+  </div>
+  @if (executeResult) {
+    <pre class="engine-monitor__result">{{ executeResult | json }}</pre>
+  }
+</section>

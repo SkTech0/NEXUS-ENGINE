@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus-engine.io/schemas/explanation-schema.json",
+  "title": "EEL Explanation",
+  "description": "Canonical explanation structure for Engine Explainability Layer",
+  "type": "object",
+  "required": ["explanation_id", "trace_id", "target_type", "target_ref", "generated_at", "locale", "audience", "narrative"],
+  "properties": {
+    "explanation_id": { "type": "string", "description": "Opaque unique id" },
+    "trace_id": { "type": "string", "description": "ECOL trace id" },
+    "target_type": {
+      "type": "string",
+      "enum": ["decision", "outcome", "rejection", "approval", "review", "fallback", "recovery", "failure"]
+    },
+    "target_ref": { "type": "string", "description": "decision_id, output_ref, failure_id, etc." },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "locale": { "type": "string", "examples": ["en-US"] },
+    "audience": {
+      "type": "string",
+      "enum": ["human", "auditor", "regulator", "enterprise", "customer", "investor", "engineer"]
+    },
+    "reasoning_path_ref": { "type": "string", "description": "ECOL decision graph or reasoning trace" },
+    "reasoning_summary": { "type": ["string", "null"] },
+    "reasoning_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": { "type": "string" },
+          "conclusion": { "type": "string" },
+          "evidence_ref": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "cause_chain_ref": { "type": ["string", "null"] },
+    "cause_summary": { "type": ["string", "null"] },
+    "contribution_breakdown": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "contributor_type": { "type": "string", "enum": ["data", "engine", "ai", "trust", "optimization"] },
+          "contributor_ref": { "type": "string" },
+          "contribution": { "type": "number", "minimum": 0, "maximum": 1 },
+          "evidence_ref": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "contribution_summary": { "type": ["string", "null"] },
+    "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "confidence_explanation": { "type": ["string", "null"] },
+    "uncertainty": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "uncertainty_explanation": { "type": ["string", "null"] },
+    "risk_level": { "type": ["string", "null"] },
+    "risk_explanation": { "type": ["string", "null"] },
+    "trust_impact": { "type": ["string", "null"] },
+    "trust_explanation": { "type": ["string", "null"] },
+    "narrative": { "type": "string", "description": "Primary human-readable explanation" },
+    "narrative_short": { "type": ["string", "null"] },
+    "narrative_audit": { "type": ["string", "null"] },
+    "narrative_regulator": { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,45 @@
+# Rollback workflow (template)
+#
+# Purpose:
+# - Provide a consistent rollback mechanism across canary/blue-green rollouts.
+# - Rollback must be fast, auditable, and validated.
+#
+name: nexus-engine-rollback-template
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Environment to rollback"
+        required: true
+        type: choice
+        options: [dev, qa, staging, prod]
+      rollback_to:
+        description: "Version identifier to rollback to"
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute rollback (template)
+        run: |
+          echo "Rollback ${{ inputs.target_env }} to ${{ inputs.rollback_to }}"
+          echo "Use last-known-good artifact and routing flip"
+
+  validate:
+    needs: [rollback]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post-rollback validation (template)
+        run: |
+          echo "Run smoke checks and verify key metrics recovered"
+
+  record:
+    needs: [validate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record incident + metrics (template)
+        run: |
+          echo "Create rollback record with cause, metrics, and follow-ups"
+

@@ -1,0 +1,5 @@
+# Nexus Engine — shared test dependencies
+# Install: pip install -r requirements-test.txt
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.23.0

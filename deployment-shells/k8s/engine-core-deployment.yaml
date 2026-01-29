@@ -1,0 +1,67 @@
+# Engine-core service shell — independent K8s deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine-core
+  labels:
+    app: engine-core
+    tier: service-shell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: engine-core
+  template:
+    metadata:
+      labels:
+        app: engine-core
+        tier: service-shell
+    spec:
+      containers:
+        - name: engine-core
+          image: nexus-engine-core:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+              name: http
+          env:
+            - name: ENGINE_CORE_SERVICE_PORT
+              value: "3001"
+            - name: ENGINE_CORE_SERVICE_HOST
+              value: "0.0.0.0"
+            - name: NEXUS_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: nexus-env
+                  key: NEXUS_ENV
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3001
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: engine-core
+  labels:
+    app: engine-core
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3001
+      targetPort: 3001
+      protocol: TCP
+      name: http
+  selector:
+    app: engine-core

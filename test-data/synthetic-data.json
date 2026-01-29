@@ -1,0 +1,15 @@
+{
+  "samples": [
+    { "id": "s1", "features": { "a": 0.1, "b": 0.9 }, "label": 1 },
+    { "id": "s2", "features": { "a": 0.8, "b": 0.2 }, "label": 0 },
+    { "id": "s3", "features": { "a": 0.5, "b": 0.5 }, "label": 1 }
+  ],
+  "tasks": [
+    { "id": "task-1", "duration": 2.0, "priority": 1 },
+    { "id": "task-2", "duration": 1.0, "priority": 2 }
+  ],
+  "entities": [
+    { "id": "e1", "initialScore": 0.7 },
+    { "id": "e2", "initialScore": 0.5 }
+  ]
+}

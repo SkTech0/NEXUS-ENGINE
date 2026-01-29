@@ -1,0 +1,28 @@
+# ENV PACK: prod (hardened + locked)
+# Precedence: defaults → env pack → secrets → runtime
+# Secrets injection points:
+# - Provider keys must be injected via env vars / secret providers (never commit secrets).
+env: prod
+ai:
+  providers:
+    - name: azure-openai
+      type: azure-openai
+      # Enable only when keys are injected and governance approves.
+      enabled: false
+      endpointEnvVar: AZURE_OPENAI_ENDPOINT
+      apiKeyEnvVar: AZURE_OPENAI_API_KEY
+    - name: openai
+      type: openai
+      enabled: false
+      apiKeyEnvVar: OPENAI_API_KEY
+  models:
+    default:
+      name: default
+      # Prod must pin model versions; update only via governed releases.
+      version: "0.0.0"
+      provider: azure-openai
+      deploymentEnvVar: AZURE_OPENAI_DEPLOYMENT
+  safety:
+    piiRedaction: true
+    # Prod prompt logging off by default; enable only via incident process with approvals.
+    promptLogging: false

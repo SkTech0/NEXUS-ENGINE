@@ -1,0 +1,105 @@
+<div class="page" *ngIf="state$ | async as s">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Evaluate</div>
+      <h1 class="title">Loan Decision in Progress</h1>
+      <p class="subtitle">Step-by-step view of the decision engine.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/loan/apply">New Application</a>
+      <a class="btn btn--primary" [class.btn--disabled]="s.overallStatus === 'running'" routerLink="/loan/decision">
+        View Decision
+      </a>
+    </div>
+  </div>
+
+  <div class="summary summary--applicant" *ngIf="s.application">
+    <div class="summary__applicant">
+      <span class="summary__label">Applicant</span>
+      <span class="summary__value">{{ s.application.fullName }}</span>
+      <span class="summary__meta">Loan: {{ s.application.loanAmount | number }} · {{ s.application.loanTenure }} months</span>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="summary__left">
+      <div class="status">
+        <span
+          class="status__pill"
+          [ngClass]="{
+            'status__pill--running': s.overallStatus === 'running',
+            'status__pill--ok': s.overallStatus === 'completed',
+            'status__pill--bad': s.overallStatus === 'failed',
+            'status__pill--idle': s.overallStatus === 'idle'
+          }"
+        >
+          {{
+            s.overallStatus === 'running'
+              ? 'Running'
+              : s.overallStatus === 'completed'
+                ? 'Completed'
+                : s.overallStatus === 'failed'
+                  ? 'Needs attention'
+                  : 'Ready'
+          }}
+        </span>
+        <div class="status__meta">
+          <div class="status__label">Progress</div>
+          <div class="status__value">{{ progress(s.steps) }}%</div>
+        </div>
+      </div>
+
+      <div class="bar">
+        <div class="bar__fill" [style.width.%]="progress(s.steps)"></div>
+      </div>
+    </div>
+
+    <div class="summary__right">
+      <a class="link" routerLink="/loan/risk">Risk & Trust</a>
+      <span class="dot"></span>
+      <a class="link" routerLink="/loan/history">History</a>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="step" *ngFor="let st of s.steps">
+      <div
+        class="step__marker"
+        [ngClass]="{
+          'step__marker--ok': st.status === 'success',
+          'step__marker--running': st.status === 'running',
+          'step__marker--bad': st.status === 'error',
+          'step__marker--pending': st.status === 'pending'
+        }"
+      ></div>
+
+      <div class="step__content">
+        <div class="step__top">
+          <div class="step__title">{{ st.label }}</div>
+          <div
+            class="step__badge"
+            [ngClass]="{
+              'step__badge--ok': st.status === 'success',
+              'step__badge--running': st.status === 'running',
+              'step__badge--bad': st.status === 'error',
+              'step__badge--pending': st.status === 'pending'
+            }"
+          >
+            {{
+              st.status === 'running'
+                ? 'In progress'
+                : st.status === 'success'
+                  ? 'Done'
+                  : st.status === 'error'
+                    ? 'Issue'
+                    : 'Queued'
+            }}
+          </div>
+        </div>
+        <div class="step__desc">{{ st.description }}</div>
+        <div class="step__error" *ngIf="st.status === 'error' && st.errorMessage">{{ st.errorMessage }}</div>
+      </div>
+    </div>
+  </div>
+</div>

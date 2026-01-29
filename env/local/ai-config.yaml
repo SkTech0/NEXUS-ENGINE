@@ -1,0 +1,15 @@
+env: local
+ai:
+  providers:
+    - name: local
+      type: local
+      enabled: true
+  models:
+    default:
+      name: default
+      version: "0.0.0-dev"
+      provider: local
+      path: ./engine-ai
+  safety:
+    piiRedaction: false
+    promptLogging: true

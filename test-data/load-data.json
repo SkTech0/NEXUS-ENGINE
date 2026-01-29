@@ -1,0 +1,19 @@
+{
+  "description": "Load test payloads",
+  "health": { "endpoint": "/api/Health", "method": "GET" },
+  "engine_execute": {
+    "endpoint": "/api/Engine/execute",
+    "method": "POST",
+    "body": { "action": "load-test", "parameters": {} }
+  },
+  "ai_infer": {
+    "endpoint": "/api/AI/infer",
+    "method": "POST",
+    "body": { "modelId": "default", "inputs": { "x": 1 } }
+  },
+  "optimize": {
+    "endpoint": "/api/Optimization/optimize",
+    "method": "POST",
+    "body": { "targetId": "load-1", "objective": "minimize", "constraints": {} }
+  }
+}

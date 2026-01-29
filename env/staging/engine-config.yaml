@@ -1,0 +1,27 @@
+# ENV PACK: staging (prod-like)
+# Config hierarchy (highest wins): defaults → env pack → secrets → runtime
+# Secrets injection point:
+# - `data.connectionStringRef` resolves from env var `ConnectionStrings__Primary` or via secrets provider.
+env: staging
+engine:
+  name: nexus-engine
+  mode: staging
+  compatibility:
+    # staging mirrors prod strictness to catch issues before promotion.
+    strict: true
+  endpoints:
+    apiBaseUrl: https://staging-api.nexus-engine.example.com
+    uiBaseUrl: https://staging.nexus-engine.example.com
+  runtime:
+    # staging should be representative; tune to match prod capacity envelope.
+    maxConcurrency: 400
+    requestTimeoutMs: 30000
+data:
+  provider: cloud
+  connectionStringRef: ConnectionStrings__Primary
+ai:
+  modelRegistry: api
+  modelRegistryEndpoint: https://staging-api.nexus-engine.example.com/models
+featureFlags:
+  provider: file
+  configPath: ./feature-flags/flag-config.yaml

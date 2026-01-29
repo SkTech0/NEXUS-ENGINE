@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "moduleResolution": "node",
+    "strict": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "sourceMap": true,
+    "outDir": "../../dist/out-tsc",
+    "rootDir": ".",
+    "baseUrl": "../..",
+    "types": ["node", "jest"],
+    "paths": {
+      "@nexus/engine-core": ["engine-core/src/index.ts"],
+      "@nexus/engine-validation": ["engine-validation/src/index.ts"]
+    }
+  },
+  "include": ["**/*.spec.ts", "**/*.test.ts", "jest.config.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

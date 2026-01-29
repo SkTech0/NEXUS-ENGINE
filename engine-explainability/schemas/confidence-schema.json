@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus-engine.io/schemas/confidence-schema.json",
+  "title": "EEL Confidence Explanation",
+  "description": "Confidence explanation structure",
+  "type": "object",
+  "required": ["confidence_explanation_id", "trace_id", "target_ref", "generated_at", "locale", "confidence", "confidence_source", "confidence_readable", "summary"],
+  "properties": {
+    "confidence_explanation_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "target_ref": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "locale": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confidence_source": { "type": "string", "enum": ["rule", "model", "aggregation", "human", "default"] },
+    "aggregation_method": { "type": ["string", "null"] },
+    "confidence_readable": { "type": "string" },
+    "confidence_interpretation": { "type": ["string", "null"] },
+    "uncertainty": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "uncertainty_type": { "type": ["string", "null"], "enum": ["aleatoric", "epistemic", "total"] },
+    "uncertainty_readable": { "type": ["string", "null"] },
+    "uncertainty_interpretation": { "type": ["string", "null"] },
+    "input_confidence_refs": { "type": "array", "items": { "type": "string" } },
+    "input_confidence_readable": { "type": ["string", "null"] },
+    "summary": { "type": "string" }
+  },
+  "additionalProperties": false
+}

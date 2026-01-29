@@ -1,0 +1,31 @@
+# API ports: 10021–10029
+services:
+  engine-api:
+    build:
+      context: ./engine-api
+      dockerfile: Dockerfile
+    ports:
+      - "10021:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+    restart: unless-stopped
+
+  product-ui:
+    build:
+      context: .
+      dockerfile: product-ui/Dockerfile
+    ports:
+      - "10022:80"
+    depends_on:
+      - engine-api
+    restart: unless-stopped
+
+  # Uncomment and add engine-ai when Dockerfile is added:
+  # engine-ai:
+  #   build:
+  #     context: ./engine-ai
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "10023:8000"
+  #   restart: unless-stopped

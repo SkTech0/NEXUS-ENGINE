@@ -1,0 +1,74 @@
+<div class="page" *ngIf="state$ | async as s">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Decision</div>
+      <h1 class="title">Outcome Summary</h1>
+      <p class="subtitle">Human-readable results from the end-to-end flow.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/evaluate">Back to Evaluate</a>
+      <a class="btn btn--primary" routerLink="/trust">Trust</a>
+    </div>
+  </div>
+
+  <div class="top">
+    <div
+      class="pill"
+      [ngClass]="{
+        'pill--ok': s.overallStatus === 'completed',
+        'pill--bad': s.overallStatus === 'failed',
+        'pill--running': s.overallStatus === 'running',
+        'pill--idle': s.overallStatus === 'idle'
+      }"
+    >
+      {{
+        s.overallStatus === 'completed'
+          ? 'Completed'
+          : s.overallStatus === 'failed'
+            ? 'Needs attention'
+            : s.overallStatus === 'running'
+              ? 'Running'
+              : 'Ready'
+      }}
+    </div>
+
+    <div class="confidence" *ngIf="confidenceFrom(s.results) as c">
+      <div class="confidence__label">Confidence</div>
+      <div class="confidence__value">{{ (c * 100) | number: '1.0-0' }}%</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <div class="card__title">Decision output</div>
+      <div class="card__hint">From the Engine execution step.</div>
+      <pre class="pre">{{ pretty(s.results.execute) }}</pre>
+    </section>
+
+    <section class="card">
+      <div class="card__title">AI output</div>
+      <div class="card__hint">From the inference step.</div>
+      <pre class="pre">{{ pretty(s.results.infer) }}</pre>
+    </section>
+
+    <section class="card">
+      <div class="card__title">Optimization result</div>
+      <div class="card__hint">From the optimization step.</div>
+      <pre class="pre">{{ pretty(s.results.optimize) }}</pre>
+    </section>
+
+    <section class="card">
+      <div class="card__title">Evaluation</div>
+      <div class="card__hint">Quality + confidence scoring.</div>
+      <pre class="pre">{{ pretty(s.results.evaluate) }}</pre>
+    </section>
+  </div>
+
+  <div class="footer">
+    <a class="link" routerLink="/history">See run history</a>
+    <span class="dot"></span>
+    <a class="link" routerLink="/playground">Start a new run</a>
+  </div>
+</div>
+

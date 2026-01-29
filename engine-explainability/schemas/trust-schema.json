@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus-engine.io/schemas/trust-schema.json",
+  "title": "EEL Trust Explanation",
+  "description": "Trust explanation structure",
+  "type": "object",
+  "required": ["trust_explanation_id", "trace_id", "target_ref", "generated_at", "locale", "trust_score", "trust_source", "trust_ref", "trust_readable", "effect", "effect_outcome", "effect_readable"],
+  "properties": {
+    "trust_explanation_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "target_ref": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "locale": { "type": "string" },
+    "trust_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "trust_dimension": { "type": ["string", "null"] },
+    "trust_source": { "type": "string", "enum": ["computed", "policy", "human", "default"] },
+    "trust_ref": { "type": "string" },
+    "trust_readable": { "type": "string" },
+    "trust_interpretation": { "type": ["string", "null"] },
+    "effect": { "type": "string", "enum": ["gate", "weight", "threshold", "override"] },
+    "effect_outcome": { "type": "string", "enum": ["allowed", "denied", "reduced_weight", "increased_weight", "default_used"] },
+    "effect_readable": { "type": "string" },
+    "evidence_ref": { "type": ["string", "null"] },
+    "summary": { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}

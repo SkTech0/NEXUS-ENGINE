@@ -1,0 +1,17 @@
+# Reliability quality gates — Nexus Engine
+
+rules:
+  - name: engine_flow_pass
+    description: "Engine flow test must pass"
+    condition: "engine_flow_exit_code == 0"
+  - name: health_check_pass
+    description: "Health endpoints return 200"
+    condition: "health_ok == true"
+  - name: no_cascading_failure
+    description: "Chaos test: no cascading failure"
+    condition: "chaos_degradation_acceptable == true"
+
+gates:
+  - test_pass_mandatory: true
+  - build_must_pass: true
+  - engine_flow_must_pass: true

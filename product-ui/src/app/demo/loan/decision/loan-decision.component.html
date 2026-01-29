@@ -1,0 +1,85 @@
+<div class="page" *ngIf="state$ | async as s">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Decision</div>
+      <h1 class="title">Loan Decision</h1>
+      <p class="subtitle">Final outcome, risk score, confidence, and reasons in plain language.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/loan/evaluate">Back to Evaluate</a>
+      <a class="btn btn--primary" routerLink="/loan/risk">Risk & Trust</a>
+    </div>
+  </div>
+
+  <div class="outcome-row" *ngIf="s.application">
+    <div class="outcome-row__applicant">
+      <span class="outcome-row__label">Applicant</span>
+      <span class="outcome-row__name">{{ s.application.fullName }}</span>
+      <span class="outcome-row__meta">Loan: {{ s.application.loanAmount | number }} · {{ s.application.loanTenure }} months</span>
+    </div>
+
+    <div
+      class="badge badge--decision"
+      [ngClass]="{
+        'badge--approved': outcome(s.results, s.application, s.domainOutcome) === 'APPROVED',
+        'badge--review': outcome(s.results, s.application, s.domainOutcome) === 'REVIEW',
+        'badge--rejected': outcome(s.results, s.application, s.domainOutcome) === 'REJECTED'
+      }"
+    >
+      {{ outcome(s.results, s.application, s.domainOutcome) }}
+    </div>
+  </div>
+
+  <div class="scores">
+    <div class="score-card" *ngIf="confidenceFrom(s.results, s.domainConfidence) as c">
+      <div class="score-card__label">Confidence</div>
+      <div class="score-card__value">{{ (c * 100) | number: '1.0-0' }}%</div>
+    </div>
+    <div class="score-card" *ngIf="riskScoreFrom(s.results, s.application, s.domainRiskScore) as r">
+      <div class="score-card__label">Risk score</div>
+      <div class="score-card__value">{{ r }}</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="card" *ngIf="reasonsFrom(s.results, s.application, outcome(s.results, s.application, s.domainOutcome)).length">
+      <div class="card__title">Reasons</div>
+      <ul class="list">
+        <li *ngFor="let reason of reasonsFrom(s.results, s.application, outcome(s.results, s.application, s.domainOutcome))">{{ reason }}</li>
+      </ul>
+    </section>
+
+    <section class="card" *ngIf="conditionsFrom(s.results, s.application, outcome(s.results, s.application, s.domainOutcome)).length">
+      <div class="card__title">Conditions</div>
+      <ul class="list">
+        <li *ngFor="let cond of conditionsFrom(s.results, s.application, outcome(s.results, s.application, s.domainOutcome))">{{ cond }}</li>
+      </ul>
+    </section>
+
+    <section class="card" *ngIf="suggestedActionsFrom(s.results, s.application, outcome(s.results, s.application, s.domainOutcome)).length">
+      <div class="card__title">Suggested actions</div>
+      <ul class="list">
+        <li *ngFor="let action of suggestedActionsFrom(s.results, s.application, outcome(s.results, s.application, s.domainOutcome))">{{ action }}</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="card card--raw">
+    <div class="card__title">Decision output</div>
+    <div class="card__hint">From the Engine execution step.</div>
+    <pre class="pre">{{ pretty(s.results.execute) }}</pre>
+  </section>
+
+  <section class="card card--raw">
+    <div class="card__title">Evaluation</div>
+    <div class="card__hint">Quality and confidence from Intelligence.</div>
+    <pre class="pre">{{ pretty(s.results.evaluate) }}</pre>
+  </section>
+
+  <div class="footer">
+    <a class="link" routerLink="/loan/history">See history</a>
+    <span class="dot"></span>
+    <a class="link" routerLink="/loan/apply">New application</a>
+  </div>
+</div>

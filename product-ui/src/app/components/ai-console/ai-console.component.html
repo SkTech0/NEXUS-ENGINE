@@ -1,0 +1,32 @@
+<section class="ai-console">
+  <header class="ai-console__header">
+    <h2>AI Console</h2>
+  </header>
+  @if (error) {
+    <div class="ai-console__error">{{ error }}</div>
+  }
+  <div class="ai-console__form">
+    <label>
+      Model
+      <select [(ngModel)]="selectedModel" [disabled]="loading">
+        @for (m of models; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Input (JSON)
+      <textarea [(ngModel)]="inputText" rows="6" [disabled]="loading"></textarea>
+    </label>
+    <button type="button" (click)="runInference()" [disabled]="loading || !selectedModel">
+      Run inference
+    </button>
+  </div>
+  @if (inferenceResult) {
+    <div class="ai-console__result">
+      <h3>Result</h3>
+      <p>Latency: {{ inferenceResult.latencyMs }} ms</p>
+      <pre>{{ inferenceResult.outputs | json }}</pre>
+    </div>
+  }
+</section>

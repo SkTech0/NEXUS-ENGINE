@@ -1,0 +1,33 @@
+{
+  "title": "Trust & Health",
+  "uid": "nexus-trust-health",
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Trust scoring latency",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "nexus_engine_trust_scoring_latency_seconds",
+          "legendFormat": "trust"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Health check status",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "up{job=\"engine-api\"}",
+          "legendFormat": "engine-api"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "tags": ["nexus", "trust", "health"]
+}

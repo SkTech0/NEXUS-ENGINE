@@ -1,0 +1,83 @@
+# Release pipeline (template)
+#
+# This is a reference pipeline definition intended to be adapted to your CI system.
+# It is stored under /release to avoid impacting existing CI workflows.
+#
+# Promotion flow: dev → qa → staging → prod
+# Release models: canary (default), blue/green (high-risk), rollback (always)
+#
+name: nexus-engine-release-template
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Promotion target"
+        required: true
+        type: choice
+        options: [dev, qa, staging, prod]
+      release_model:
+        description: "Deployment model"
+        required: true
+        type: choice
+        options: [canary, blue-green]
+      risk_class:
+        description: "Change risk classification"
+        required: true
+        type: choice
+        options: [low, medium, high]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build (template)
+        run: |
+          echo "Build goes here"
+      - name: Test (template)
+        run: |
+          echo "Tests go here"
+
+  validate:
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate contracts/schemas (template)
+        run: |
+          echo "Contract + schema compatibility checks go here"
+      - name: Security gates (template)
+        run: |
+          echo "SAST/dependency scanning gates go here"
+
+  approve:
+    needs: [validate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Approval gate (template)
+        run: |
+          echo "Implement approval gate per change-management.md"
+
+  deploy:
+    needs: [approve]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Select deployment model
+        run: |
+          echo "Dispatch canary or blue/green workflow templates"
+      - name: Deploy (template)
+        run: |
+          echo "Deployment invocation goes here (do not couple to infra in this repo scaffold)"
+
+  verify_and_promote:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post-deploy validation (template)
+        run: |
+          echo "Smoke tests + SLO checks go here"
+      - name: Promote (template)
+        run: |
+          echo "Promote to next environment when gates pass"
+

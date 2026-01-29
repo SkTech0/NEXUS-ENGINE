@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus-engine.io/schemas/risk-schema.json",
+  "title": "EEL Risk Explanation",
+  "description": "Risk explanation structure",
+  "type": "object",
+  "required": ["risk_explanation_id", "trace_id", "target_ref", "generated_at", "locale", "risk_readable", "summary"],
+  "properties": {
+    "risk_explanation_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "target_ref": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "locale": { "type": "string" },
+    "risk_score": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "risk_tier": { "type": ["string", "null"] },
+    "risk_type": { "type": ["string", "null"] },
+    "risk_source": { "type": ["string", "null"], "enum": ["rule", "model", "policy", "aggregation"] },
+    "risk_readable": { "type": "string" },
+    "risk_interpretation": { "type": ["string", "null"] },
+    "effect": { "type": ["string", "null"], "enum": ["escalate", "refer", "deny", "allow", "mitigate"] },
+    "effect_readable": { "type": ["string", "null"] },
+    "evidence_ref": { "type": ["string", "null"] },
+    "input_risk_refs": { "type": "array", "items": { "type": "string" } },
+    "propagated_from_readable": { "type": ["string", "null"] },
+    "summary": { "type": "string" }
+  },
+  "additionalProperties": false
+}

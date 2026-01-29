@@ -1,0 +1,23 @@
+env: dev
+security:
+  auth:
+    mode: oidc
+    jwt:
+      issuer: https://dev-idp.example.com/
+      audience: nexus-engine
+      jwksUrl: https://dev-idp.example.com/.well-known/jwks.json
+  tls:
+    required: true
+  headers:
+    hsts:
+      enabled: true
+      maxAgeSeconds: 604800
+    contentSecurityPolicy:
+      enabled: true
+      policy: "default-src 'self'; frame-ancestors 'none'; object-src 'none';"
+  rateLimiting:
+    enabled: true
+    requestsPerMinute: 600
+  audit:
+    enabled: true
+    redactSecrets: true

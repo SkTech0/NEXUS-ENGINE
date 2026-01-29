@@ -1,0 +1,26 @@
+env: dev
+infra:
+  platform: kubernetes
+  namespace: nexus-dev
+  service:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi
+  ingress:
+    enabled: true
+    className: nginx
+    host: dev-api.nexus-engine.example.com
+    tlsSecretName: nexus-dev-tls
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCpuUtilizationPercent: 70
+  certManager:
+    enabled: true
+    clusterIssuer: letsencrypt-staging

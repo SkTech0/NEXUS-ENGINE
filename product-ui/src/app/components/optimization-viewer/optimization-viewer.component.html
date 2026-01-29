@@ -1,0 +1,26 @@
+<section class="optimization-viewer">
+  <header class="optimization-viewer__header">
+    <h2>Optimization Viewer</h2>
+    <p class="optimization-viewer__subtitle">Run and inspect optimization results</p>
+  </header>
+  @if (error) {
+    <div class="optimization-viewer__error">{{ error }}</div>
+  }
+  <div class="optimization-viewer__form">
+    <label>
+      Target ID
+      <input type="text" [(ngModel)]="targetId" [disabled]="loading" />
+    </label>
+    <button type="button" (click)="runOptimization()" [disabled]="loading">
+      Run optimization
+    </button>
+  </div>
+  @if (result) {
+    <div class="optimization-viewer__result">
+      <h3>Result</h3>
+      <p>Target: {{ result.targetId }}</p>
+      <p>Value: {{ result.value }}</p>
+      <p>Feasible: {{ result.feasible }}</p>
+    </div>
+  }
+</section>

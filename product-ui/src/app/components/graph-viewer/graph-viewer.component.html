@@ -1,0 +1,28 @@
+<section class="graph-viewer">
+  <header class="graph-viewer__header">
+    <h2>Graph Viewer</h2>
+    <p class="graph-viewer__subtitle">Nexus Engine dependency graph</p>
+  </header>
+  <div class="graph-viewer__canvas">
+    <div class="graph-viewer__nodes">
+      @for (node of nodes; track node.id) {
+        <button
+          type="button"
+          class="graph-viewer__node"
+          [class.graph-viewer__node--selected]="selectedNodeId === node.id"
+          (click)="selectNode(node.id)"
+        >
+          {{ node.label }}
+        </button>
+      }
+    </div>
+    <div class="graph-viewer__edges" aria-hidden="true">
+      @for (edge of edges; track edge.id) {
+        <div class="graph-viewer__edge" [attr.data-edge]="edge.id"></div>
+      }
+    </div>
+  </div>
+  @if (selectedNodeId) {
+    <p class="graph-viewer__selection">Selected: {{ selectedNodeId }}</p>
+  }
+</section>

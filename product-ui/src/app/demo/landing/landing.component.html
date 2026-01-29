@@ -1,0 +1,57 @@
+<section class="hero">
+  <div class="hero__content">
+    <div class="badge">Demo Experience</div>
+    <h1 class="hero__title">NEXUS Playground</h1>
+    <p class="hero__subtitle">
+      A guided product experience to run a decision flow, see live evaluation, and review outcomes with trust signals.
+    </p>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary" routerLink="/playground">Start in Playground</a>
+      <a class="btn btn--ghost" routerLink="/history">View History</a>
+    </div>
+  </div>
+
+  <div class="hero__panel">
+    <h2 class="panel__title">What you’ll see</h2>
+    <ol class="steps">
+      <li class="steps__item">
+        <div class="steps__name">Playground</div>
+        <div class="steps__desc">Enter input (simple fields or JSON) and kick off a decision flow.</div>
+      </li>
+      <li class="steps__item">
+        <div class="steps__name">Evaluate</div>
+        <div class="steps__desc">Watch step-by-step execution with clear status indicators.</div>
+      </li>
+      <li class="steps__item">
+        <div class="steps__name">Decision</div>
+        <div class="steps__desc">Review decision output, AI result, optimization, and confidence.</div>
+      </li>
+      <li class="steps__item">
+        <div class="steps__name">Trust</div>
+        <div class="steps__desc">Check health, confidence score, and risk indicators.</div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="grid">
+  <a class="card" routerLink="/playground">
+    <div class="card__kicker">Start</div>
+    <div class="card__title">Playground</div>
+    <div class="card__body">Enter your scenario and run the decision flow.</div>
+  </a>
+
+  <a class="card" routerLink="/trust">
+    <div class="card__kicker">Signals</div>
+    <div class="card__title">Trust</div>
+    <div class="card__body">Health status, confidence score, and risk indicators.</div>
+  </a>
+
+  <a class="card" routerLink="/history">
+    <div class="card__kicker">Review</div>
+    <div class="card__title">History</div>
+    <div class="card__body">Timeline of previous runs stored in memory.</div>
+  </a>
+</section>
+

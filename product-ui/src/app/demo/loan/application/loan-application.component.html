@@ -1,0 +1,101 @@
+<div class="page">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Loan Application</div>
+      <h1 class="title">Apply for a Loan</h1>
+      <p class="subtitle">Enter applicant and loan details. Click Evaluate Loan to run the decision engine.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--ghost" routerLink="/loan">Back</a>
+      <button class="btn btn--primary" (click)="evaluate()">Evaluate Loan</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card__title">Applicant details</div>
+      <div class="form">
+        <label class="field">
+          <span class="field__label">Full name</span>
+          <input class="input" type="text" [(ngModel)]="app.fullName" placeholder="Applicant full name" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Age</span>
+          <input class="input" type="number" [(ngModel)]="app.age" min="18" max="100" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Annual income</span>
+          <input class="input" type="number" [(ngModel)]="app.income" min="0" placeholder="e.g. 75000" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Employment type</span>
+          <select class="input" [(ngModel)]="app.employmentType">
+            <option *ngFor="let t of employmentTypes" [value]="t">{{ t }}</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Company</span>
+          <input class="input" type="text" [(ngModel)]="app.company" placeholder="Employer or business name" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Credit score</span>
+          <input class="input" type="number" [(ngModel)]="app.creditScore" min="300" max="850" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">City</span>
+          <input class="input" type="text" [(ngModel)]="app.city" placeholder="City" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Country</span>
+          <input class="input" type="text" [(ngModel)]="app.country" placeholder="Country" />
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__title">Loan details</div>
+      <div class="form">
+        <label class="field">
+          <span class="field__label">Loan amount</span>
+          <input class="input" type="number" [(ngModel)]="app.loanAmount" min="0" placeholder="e.g. 25000" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Loan tenure (months)</span>
+          <input class="input" type="number" [(ngModel)]="app.loanTenure" min="1" max="360" placeholder="e.g. 36" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Existing loans (count)</span>
+          <input class="input" type="number" [(ngModel)]="app.existingLoans" min="0" />
+        </label>
+      </div>
+    </div>
+
+    <div class="card card--hint">
+      <div class="card__title">What happens next</div>
+      <div class="hint">
+        <div class="hint__row">
+          <div class="dot dot--purple"></div>
+          <div class="hint__text">We run Engine → AI → Intelligence → Optimization → Trust.</div>
+        </div>
+        <div class="hint__row">
+          <div class="dot dot--green"></div>
+          <div class="hint__text">You'll see step-by-step progress and a final decision (Approved, Review, or Rejected).</div>
+        </div>
+        <div class="hint__row">
+          <div class="dot dot--amber"></div>
+          <div class="hint__text">Results are stored in History so you can replay any run.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

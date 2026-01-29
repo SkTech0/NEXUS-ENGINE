@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": false,
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@nexus/engine-core": ["engine-core/src/index.ts"],
+      "@nexus/engine-distributed": ["engine-distributed/src/index.ts"],
+      "@nexus/engine-data": ["engine-data/src/index.ts"],
+      "@nexus/engine-intelligence": ["engine-intelligence/src/index.ts"],
+      "@nexus/engine-optimization": ["engine-optimization/src/index.ts"],
+      "@nexus/engine-trust": ["engine-trust/src/index.ts"],
+      "@nexus/saas-layer": ["saas-layer/src/index.ts"],
+      "@nexus/engine-validation": ["engine-validation/src/index.ts"],
+      "@nexus/engine-optimization-layer": ["engine-optimization-layer/src/index.ts"],
+      "@nexus/engine-resilience-layer": ["engine-resilience-layer/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp", "dist", "**/*.spec.ts", "**/node_modules"]
+}
