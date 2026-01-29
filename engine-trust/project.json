@@ -1,7 +1,0 @@
-{
-  "name": "engine-trust",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "library",
-  "sourceRoot": "engine-trust/src",
-  "tags": ["scope:trust", "domain:engine"]
-}

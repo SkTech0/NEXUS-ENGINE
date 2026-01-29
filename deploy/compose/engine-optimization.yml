@@ -1,0 +1,18 @@
+# Engine-optimization service shell — independent Compose service.
+services:
+  engine-optimization:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/engine-optimization.Dockerfile
+    ports:
+      - "${ENGINE_OPTIMIZATION_SERVICE_PORT:-3005}:3005"
+    environment:
+      - ENGINE_OPTIMIZATION_SERVICE_PORT=3005
+      - NEXUS_ENV=${NEXUS_ENV:-development}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3005/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped

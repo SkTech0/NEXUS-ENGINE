@@ -1,0 +1,7 @@
+{
+  "name": "engine-core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "engines/engine-core/src",
+  "tags": ["scope:core", "domain:engine"]
+}

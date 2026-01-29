@@ -1,0 +1,7 @@
+{
+  "name": "engine-intelligence",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "engines/engine-intelligence/src",
+  "tags": ["scope:intelligence", "domain:engine"]
+}

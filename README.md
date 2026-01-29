@@ -2,22 +2,19 @@
 
 Nx monorepo + microservices: engine-core, distributed, data, intelligence, optimization, AI, trust, API, product-ui, saas-layer.
 
-## Structure
+## Structure (at a glance)
 
-```
-/engine-core       — Domain kernel, entities, ports (TypeScript)
-/engine-distributed — Coordination and distribution (TypeScript)
-/engine-data       — Persistence and data access (TypeScript)
-/engine-intelligence — Decision and reasoning (TypeScript)
-/engine-optimization — Scheduling and optimization (TypeScript)
-/engine-ai         — AI/ML engines (Python)
-/engine-trust      — Security, identity, audit (TypeScript)
-/engine-api        — .NET 10 HTTP API
-/product-ui        — Angular 18 SPA
-/saas-layer        — Multi-tenant and SaaS (TypeScript)
-/infra             — Deployment and infrastructure
-/docs              — Documentation
-```
+| Area | Folder | What’s inside |
+|------|--------|----------------|
+| **Code** | `apps/` | product-ui, engine-api |
+| | `engines/` | engine-core, engine-ai, engine-data, intelligence, optimization, trust, distributed, saas-layer, layers |
+| | `platform-runtime/` | service-shells, gateway, orchestration, runtime-decoupling |
+| **Deploy** | `deploy/` | Docker, Compose, K8s |
+| **Docs** | `docs/` | All docs — [docs/README.md](docs/README.md) is the index |
+| **Specs** | `specs/` | Contracts, governance, products, quality, release, ops — [specs/README.md](specs/README.md) |
+| **Infra** | `infra/` | Observability, CI/CD |
+
+Full map: [STRUCTURE.md](STRUCTURE.md).
 
 ## Tech
 
@@ -48,7 +45,7 @@ npx nx run-many --target=build --all
 npx nx serve product-ui
 
 # Run engine-api (.NET)
-cd engine-api && dotnet run --project src/EngineApi/EngineApi.csproj
+./run-api.sh
 ```
 
 ## Docker
@@ -70,4 +67,6 @@ docker-compose up -d
 
 ## Docs
 
-See [docs/architecture.md](docs/architecture.md) and [docs/ddd.md](docs/ddd.md).
+- **Start:** [docs/README.md](docs/README.md) — single index for all docs
+- **First read:** [docs/onboarding/START_HERE.md](docs/onboarding/START_HERE.md) · [docs/onboarding/GETTING_STARTED.md](docs/onboarding/GETTING_STARTED.md)
+- **Run & structure:** [docs/guides/PROJECT_STRUCTURE.md](docs/guides/PROJECT_STRUCTURE.md) · [docs/guides/RUN-E2E.md](docs/guides/RUN-E2E.md)

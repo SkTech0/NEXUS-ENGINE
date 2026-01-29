@@ -3,4 +3,4 @@
 
 set -e
 cd "$(dirname "$0")"
-dotnet run --project engine-api/src/EngineApi/EngineApi.csproj
+dotnet run --project apps/engine-api/src/EngineApi/EngineApi.csproj

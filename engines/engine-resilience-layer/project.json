@@ -1,0 +1,38 @@
+{
+  "name": "engine-resilience-layer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "engines/engine-resilience-layer/src",
+  "tags": ["scope:resilience", "domain:engine"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/engine-resilience-layer",
+        "main": "engines/engine-resilience-layer/src/index.ts",
+        "tsConfig": "engines/engine-resilience-layer/tsconfig.json"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "engines/engine-resilience-layer/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": { "ci": true }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["engines/engine-resilience-layer/**/*.ts"]
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "engine-validation",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "engines/engine-validation/src",
+  "tags": ["scope:validation", "domain:engine"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/engine-validation",
+        "main": "engines/engine-validation/src/index.ts",
+        "tsConfig": "engines/engine-validation/tsconfig.json"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "engines/engine-validation/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": { "ci": true }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["engines/engine-validation/**/*.ts"]
+      }
+    }
+  }
+}

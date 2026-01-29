@@ -27,16 +27,16 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@nexus/engine-core": ["engine-core/src/index.ts"],
-      "@nexus/engine-distributed": ["engine-distributed/src/index.ts"],
-      "@nexus/engine-data": ["engine-data/src/index.ts"],
-      "@nexus/engine-intelligence": ["engine-intelligence/src/index.ts"],
-      "@nexus/engine-optimization": ["engine-optimization/src/index.ts"],
-      "@nexus/engine-trust": ["engine-trust/src/index.ts"],
-      "@nexus/saas-layer": ["saas-layer/src/index.ts"],
-      "@nexus/engine-validation": ["engine-validation/src/index.ts"],
-      "@nexus/engine-optimization-layer": ["engine-optimization-layer/src/index.ts"],
-      "@nexus/engine-resilience-layer": ["engine-resilience-layer/src/index.ts"]
+      "@nexus/engine-core": ["engines/engine-core/src/index.ts"],
+      "@nexus/engine-distributed": ["engines/engine-distributed/src/index.ts"],
+      "@nexus/engine-data": ["engines/engine-data/src/index.ts"],
+      "@nexus/engine-intelligence": ["engines/engine-intelligence/src/index.ts"],
+      "@nexus/engine-optimization": ["engines/engine-optimization/src/index.ts"],
+      "@nexus/engine-trust": ["engines/engine-trust/src/index.ts"],
+      "@nexus/saas-layer": ["engines/saas-layer/src/index.ts"],
+      "@nexus/engine-validation": ["engines/engine-validation/src/index.ts"],
+      "@nexus/engine-optimization-layer": ["engines/engine-optimization-layer/src/index.ts"],
+      "@nexus/engine-resilience-layer": ["engines/engine-resilience-layer/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp", "dist", "**/*.spec.ts", "**/node_modules"]

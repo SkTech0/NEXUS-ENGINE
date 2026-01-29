@@ -1,0 +1,7 @@
+{
+  "name": "engine-ai",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "engines/engine-ai",
+  "tags": ["scope:ai", "domain:engine"]
+}
