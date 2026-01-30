@@ -1,3 +1,8 @@
 [build]
 builder = "dockerfile"
 dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/Health/live"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
