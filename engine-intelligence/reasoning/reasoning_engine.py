@@ -1,9 +1,16 @@
 """
 Reasoning engine — logical steps and rule application.
-Modular, testable.
+ERL-4: validation at entry, structured logging, platform error model.
 """
+from __future__ import annotations
+
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
+
+from errors.error_model import ValidationError
+
+_logger = logging.getLogger("engine-intelligence")
 
 
 @dataclass
@@ -30,7 +37,7 @@ class Rule:
 class ReasoningEngine:
     """
     In-memory reasoning: facts + rules; step() applies rules once.
-    Testable.
+    ERL-4: entry-point validation, structured logging, fail-fast.
     """
 
     def __init__(self) -> None:
@@ -38,12 +45,24 @@ class ReasoningEngine:
         self._rules: list[Rule] = []
 
     def add_fact(self, fact: Fact) -> None:
-        """Add fact. Testable."""
+        """Add fact. Validates before state mutation."""
+        if fact is None:
+            raise ValidationError("fact is required", details={"field": "fact"})
+        if not (getattr(fact, "predicate", None) or "").strip():
+            raise ValidationError("fact predicate is required", details={"field": "predicate"})
         self._facts[fact.key()] = fact
+        _logger.debug("reasoning_engine.add_fact key=%s", fact.key())
 
     def add_rule(self, rule: Rule) -> None:
-        """Add rule. Testable."""
+        """Add rule. Validates before state mutation."""
+        if rule is None:
+            raise ValidationError("rule is required", details={"field": "rule"})
+        if not (getattr(rule, "name", None) or "").strip():
+            raise ValidationError("rule name is required", details={"field": "name"})
+        if getattr(rule, "condition", None) is None or getattr(rule, "conclusion", None) is None:
+            raise ValidationError("rule condition and conclusion are required", details={"field": "rule"})
         self._rules.append(rule)
+        _logger.debug("reasoning_engine.add_rule name=%s", rule.name)
 
     def get_facts(self) -> list[Fact]:
         """All facts. Testable."""

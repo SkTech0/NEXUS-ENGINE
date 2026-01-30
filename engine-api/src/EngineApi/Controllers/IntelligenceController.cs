@@ -16,8 +16,10 @@ public class IntelligenceController : ControllerBase
     }
 
     [HttpPost("evaluate")]
-    public ActionResult<IntelligenceResponseDto> Evaluate([FromBody] IntelligenceRequestDto request)
+    public ActionResult<IntelligenceResponseDto> Evaluate([FromBody] IntelligenceRequestDto? request)
     {
+        if (request == null)
+            return BadRequest(new { error_code = "VALIDATION", error_type = "ValidationError", message = "Request body is required" });
         var result = _intelligenceService.Evaluate(request);
         return Ok(result);
     }

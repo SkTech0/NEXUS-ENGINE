@@ -16,8 +16,10 @@ public class OptimizationController : ControllerBase
     }
 
     [HttpPost("optimize")]
-    public ActionResult<OptimizationResponseDto> Optimize([FromBody] OptimizationRequestDto request)
+    public ActionResult<OptimizationResponseDto> Optimize([FromBody] OptimizationRequestDto? request)
     {
+        if (request == null)
+            return BadRequest(new { error_code = "VALIDATION", error_type = "ValidationError", message = "Request body is required" });
         var result = _optimizationService.Optimize(request);
         return Ok(result);
     }

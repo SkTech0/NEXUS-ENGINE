@@ -20,7 +20,10 @@ public class EngineService : IEngineService
 
     public EngineResponseDto Execute(EngineRequestDto request)
     {
-        var result = _repository.Execute(request.Action ?? "default", request.Parameters);
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+        var action = string.IsNullOrWhiteSpace(request.Action) ? "default" : request.Action;
+        var result = _repository.Execute(action, request.Parameters);
         return new EngineResponseDto("ok", result, null);
     }
 }

@@ -8,6 +8,8 @@ public class AIService : IAIService
 
     public AIInferenceResponseDto Infer(AIInferenceRequestDto request)
     {
+        if (string.IsNullOrWhiteSpace(request.ModelId))
+            throw new ArgumentException("ModelId is required", nameof(request));
         var outputs = request.Inputs != null
             ? new Dictionary<string, object?>(request.Inputs)
             : new Dictionary<string, object?>();

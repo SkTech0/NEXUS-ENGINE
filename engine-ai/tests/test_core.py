@@ -1,5 +1,6 @@
 """Core unit tests for engine-ai."""
 import pytest
+from errors.error_model import ValidationError
 from inference.inference_service import (
     InferenceRequest,
     InferenceResponse,
@@ -49,3 +50,21 @@ class TestInferenceService:
         resp = svc.infer(req)
         assert resp.outputs == {"out": 6}
         assert resp.model_id == "m1"
+
+    def test_infer_validates_request_null(self):
+        svc = create_inference_service()
+        with pytest.raises(ValidationError) as exc_info:
+            svc.infer(None)
+        assert "null" in str(exc_info.value).lower() or "required" in str(exc_info.value).lower()
+
+    def test_infer_validates_request_missing_model_id(self):
+        svc = create_inference_service()
+        req = InferenceRequest(model_id="", inputs={"x": 1})
+        with pytest.raises(ValidationError):
+            svc.infer(req)
+
+    def test_infer_validates_request_missing_inputs(self):
+        svc = create_inference_service()
+        req = InferenceRequest(model_id="m1", inputs=None)
+        with pytest.raises(ValidationError):
+            svc.infer(req)

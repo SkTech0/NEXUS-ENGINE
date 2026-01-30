@@ -23,8 +23,10 @@ public class EngineController : ControllerBase
     }
 
     [HttpPost("execute")]
-    public ActionResult<EngineResponseDto> Execute([FromBody] EngineRequestDto request)
+    public ActionResult<EngineResponseDto> Execute([FromBody] EngineRequestDto? request)
     {
+        if (request == null)
+            return BadRequest(new { error_code = "VALIDATION", error_type = "ValidationError", message = "Request body is required" });
         var result = _engineService.Execute(request);
         return Ok(result);
     }

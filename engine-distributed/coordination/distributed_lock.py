@@ -1,10 +1,17 @@
 """
 Distributed lock — acquire/release with optional TTL.
-Modular, in-memory implementation for testing; replace with Redis/etcd adapter in production.
+Enterprise: validation, logging, clear errors (ERL-4).
 """
-from dataclasses import dataclass, field
+from __future__ import annotations
+
+import logging
+from dataclasses import dataclass
 from time import monotonic
 from typing import Any
+
+from errors.error_model import ValidationError
+
+_logger = logging.getLogger("engine-distributed")
 
 
 @dataclass
@@ -17,7 +24,7 @@ class LockState:
 
 class DistributedLockBackend:
     """
-    In-memory lock backend. Testable.
+    In-memory lock backend. Enterprise: validation, logging.
     Production would use Redis, etcd, or similar.
     """
 
@@ -32,8 +39,14 @@ class DistributedLockBackend:
     ) -> bool:
         """
         Acquire lock. Returns True if acquired.
-        If ttl_seconds given, lock expires after that many seconds (monotonic).
+        Validates lock_id and holder; rejects negative TTL.
         """
+        if not (lock_id or "").strip():
+            raise ValidationError("lock_id is required", details={"field": "lock_id"})
+        if not (holder or "").strip():
+            raise ValidationError("holder is required", details={"field": "holder"})
+        if ttl_seconds is not None and ttl_seconds < 0:
+            raise ValidationError("ttl_seconds must be non-negative", details={"field": "ttl_seconds"})
         now = monotonic()
         state = self._locks.get(lock_id)
         if state is not None:
@@ -46,6 +59,7 @@ class DistributedLockBackend:
             holder=holder,
             expires_at=now + ttl_seconds if ttl_seconds is not None else None,
         )
+        _logger.info("distributed_lock.acquire lock_id=%s holder=%s", lock_id, holder)
         return True
 
     def _refresh(self, lock_id: str, holder: str, ttl_seconds: float | None) -> None:
@@ -56,11 +70,16 @@ class DistributedLockBackend:
         )
 
     def release(self, lock_id: str, holder: str) -> bool:
-        """Release lock. Returns True if this holder had the lock and released it."""
+        """Release lock. Returns True if this holder had the lock and released it. Validates inputs."""
+        if not (lock_id or "").strip():
+            raise ValidationError("lock_id is required", details={"field": "lock_id"})
+        if not (holder or "").strip():
+            raise ValidationError("holder is required", details={"field": "holder"})
         state = self._locks.get(lock_id)
         if state is None or state.holder != holder:
             return False
         del self._locks[lock_id]
+        _logger.info("distributed_lock.release lock_id=%s holder=%s", lock_id, holder)
         return True
 
     def is_held_by(self, lock_id: str, holder: str) -> bool:

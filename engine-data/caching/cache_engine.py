@@ -1,13 +1,20 @@
 """
 Cache engine — get/set/delete with optional TTL.
-Modular, testable; in-memory implementation.
+ERL-4: validation at entry, structured logging, platform error model.
 """
+from __future__ import annotations
+
+import logging
 from dataclasses import dataclass, field
 from time import monotonic
 from typing import Any, Generic, TypeVar
 
+from errors.error_model import ValidationError
+
 K = TypeVar("K")
 V = TypeVar("V")
+
+_logger = logging.getLogger("engine-data")
 
 
 @dataclass
@@ -50,15 +57,19 @@ class CacheEngine(Generic[K, V]):
         value: V,
         ttl_seconds: float | None = None,
     ) -> None:
-        """Set value with optional TTL. Testable."""
+        """Set value with optional TTL. Rejects negative TTL."""
         ttl = ttl_seconds if ttl_seconds is not None else self._default_ttl
+        if ttl is not None and ttl < 0:
+            raise ValidationError("ttl_seconds must be non-negative", details={"field": "ttl_seconds"})
         expires = (monotonic() + ttl) if ttl is not None else None
         self._store[key] = CacheEntry(value=value, expires_at=expires)
+        _logger.debug("cache_engine.set key=%s ttl=%s", key, ttl)
 
     def delete(self, key: K) -> bool:
-        """Delete key. Returns True if key was present. Testable."""
+        """Delete key. Returns True if key was present."""
         if key in self._store:
             del self._store[key]
+            _logger.debug("cache_engine.delete key=%s", key)
             return True
         return False
 

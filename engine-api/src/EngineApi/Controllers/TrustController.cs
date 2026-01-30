@@ -16,8 +16,10 @@ public class TrustController : ControllerBase
     }
 
     [HttpPost("verify")]
-    public ActionResult<TrustVerifyResponseDto> Verify([FromBody] TrustVerifyRequestDto request)
+    public ActionResult<TrustVerifyResponseDto> Verify([FromBody] TrustVerifyRequestDto? request)
     {
+        if (request == null)
+            return BadRequest(new { error_code = "VALIDATION", error_type = "ValidationError", message = "Request body is required" });
         var result = _trustService.Verify(request);
         return Ok(result);
     }
@@ -25,6 +27,8 @@ public class TrustController : ControllerBase
     [HttpGet("score/{entityId}")]
     public ActionResult<TrustScoreResponseDto> GetScore(string entityId)
     {
+        if (string.IsNullOrWhiteSpace(entityId))
+            return BadRequest(new { error_code = "VALIDATION", error_type = "ValidationError", message = "entityId is required" });
         var result = _trustService.GetScore(entityId);
         return Ok(result);
     }

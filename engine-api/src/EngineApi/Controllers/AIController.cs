@@ -16,8 +16,10 @@ public class AIController : ControllerBase
     }
 
     [HttpPost("infer")]
-    public ActionResult<AIInferenceResponseDto> Infer([FromBody] AIInferenceRequestDto request)
+    public ActionResult<AIInferenceResponseDto> Infer([FromBody] AIInferenceRequestDto? request)
     {
+        if (request == null)
+            return BadRequest(new { error_code = "VALIDATION", error_type = "ValidationError", message = "Request body is required" });
         var result = _aiService.Infer(request);
         return Ok(result);
     }

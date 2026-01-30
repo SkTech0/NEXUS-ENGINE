@@ -1,9 +1,16 @@
 """
 Compliance engine — check actions or state against rules.
-Modular, testable.
+ERL-4: validation at entry, structured logging, platform error model.
 """
+from __future__ import annotations
+
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
+
+from errors.error_model import ValidationError
+
+_logger = logging.getLogger("engine-trust")
 
 
 @dataclass
@@ -31,22 +38,30 @@ class Rule:
 class ComplianceEngine:
     """
     Compliance: add rules; check(subject) returns ComplianceResult.
-    Testable.
+    ERL-4: entry-point validation, structured logging, fail-fast.
     """
 
     def __init__(self) -> None:
         self._rules: list[Rule] = []
 
     def add_rule(self, rule: Rule) -> None:
-        """Add rule. Testable."""
+        """Add rule. Validates rule and id before state mutation."""
+        if rule is None:
+            raise ValidationError("rule is required", details={"field": "rule"})
+        if not (getattr(rule, "id", None) or "").strip():
+            raise ValidationError("rule id is required", details={"field": "id"})
+        if getattr(rule, "check", None) is None:
+            raise ValidationError("rule check function is required", details={"field": "check"})
         self._rules.append(rule)
+        _logger.debug("compliance_engine.add_rule id=%s", rule.id)
 
     def check(self, subject: Any) -> ComplianceResult:
-        """Run all rules; return result with violations. Testable."""
+        """Run all rules; return result with violations. Logs result."""
         result = ComplianceResult(compliant=True)
         for rule in self._rules:
             if not rule.check(subject):
                 result.add_violation(rule.message or f"Rule {rule.id} failed")
+        _logger.info("compliance_engine.check compliant=%s violations=%s", result.compliant, len(result.violations))
         return result
 
     def rules(self) -> list[str]:
