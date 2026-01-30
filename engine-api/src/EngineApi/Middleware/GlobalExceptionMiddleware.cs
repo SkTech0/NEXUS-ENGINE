@@ -63,9 +63,9 @@ public class GlobalExceptionMiddleware
             ArgumentException => (HttpStatusCode.BadRequest, "VALIDATION", "ValidationError"),
             InvalidOperationException => (HttpStatusCode.BadRequest, "ENGINE", "EngineError"),
             KeyNotFoundException => (HttpStatusCode.NotFound, "ENGINE", "EngineError"),
+            TaskCanceledException => (HttpStatusCode.RequestTimeout, "TIMEOUT", "TimeoutError"),
             OperationCanceledException => (HttpStatusCode.RequestTimeout, "TIMEOUT", "TimeoutError"),
             HttpRequestException => (HttpStatusCode.BadGateway, "DEPENDENCY", "DependencyError"),
-            TaskCanceledException => (HttpStatusCode.RequestTimeout, "TIMEOUT", "TimeoutError"),
             _ => (HttpStatusCode.InternalServerError, "EXECUTION", "ExecutionError"),
         };
     }
