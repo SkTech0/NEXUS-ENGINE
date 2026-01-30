@@ -1,18 +1,22 @@
-FROM python:3.11-slim
+FROM node:20-alpine
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    nginx \
-    nodejs \
-    npm \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache bash curl nginx
 
 WORKDIR /app
 
-COPY . .
+COPY engine-api ./engine-api
+COPY engine-core ./engine-core
+COPY engine-ai ./engine-ai
+COPY engine-data ./engine-data
+COPY engine-intelligence ./engine-intelligence
+COPY engine-trust ./engine-trust
+COPY engine-optimization ./engine-optimization
+COPY engine-distributed ./engine-distributed
+COPY run-engine-services.sh run-api-with-engines.sh ./
+COPY deploy/railway/start.sh /app/start.sh
 
-RUN chmod +x run-all.sh run-engine-services.sh run-api-with-engines.sh deploy/railway/start.sh
+RUN chmod +x /app/start.sh /app/run-engine-services.sh /app/run-api-with-engines.sh
 
 EXPOSE 10021
 
-CMD ["deploy/railway/start.sh"]
+CMD ["/app/start.sh"]

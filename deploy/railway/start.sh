@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 echo "NEXUS-ENGINE Platform Preview"
 echo "ERL-4 Deployment Mode"
 ./run-engine-services.sh
