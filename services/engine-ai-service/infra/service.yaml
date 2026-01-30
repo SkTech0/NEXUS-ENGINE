@@ -1,0 +1,9 @@
+# Runtime config for engine-ai-service
+name: engine-ai-service
+version: "1.0.0"
+runtime:
+  host: "0.0.0.0"
+  port: 5011
+health:
+  path: /health
+  interval_seconds: 10

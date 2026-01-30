@@ -1,0 +1,8 @@
+name: engine-trust-service
+version: "1.0.0"
+runtime:
+  host: "0.0.0.0"
+  port: 5014
+health:
+  path: /health
+  interval_seconds: 10

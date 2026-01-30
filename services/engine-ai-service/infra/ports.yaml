@@ -1,0 +1,3 @@
+# Exposed ports for engine-ai-service
+http: 5011
+health: 5011
