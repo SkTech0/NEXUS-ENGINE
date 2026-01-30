@@ -1,0 +1,33 @@
+# Startup order for NEXUS extracted services (SEP).
+# engine-api depends on all engine-* services; services depend on engine-core (lib).
+# Additive: does not modify existing orchestration-layer.
+
+version: "1.0"
+description: "Services DAG for independent engine services"
+
+startup_order:
+  - engine-core          # lib / shared kernel
+  - engine-data-service
+  - engine-distributed-service
+  - engine-trust-service
+  - engine-ai-service
+  - engine-intelligence-service
+  - engine-optimization-service
+  - engine-api
+
+dependencies:
+  engine-core: []
+  engine-data-service: [engine-core]
+  engine-distributed-service: [engine-core, engine-data-service]
+  engine-trust-service: [engine-core]
+  engine-ai-service: [engine-core]
+  engine-intelligence-service: [engine-core]
+  engine-optimization-service: [engine-core]
+  engine-api:
+    - engine-core
+    - engine-data-service
+    - engine-distributed-service
+    - engine-trust-service
+    - engine-ai-service
+    - engine-intelligence-service
+    - engine-optimization-service
