@@ -6,15 +6,15 @@ using Microsoft.Extensions.Logging;
 
 namespace EngineApi.Services;
 
-/// <summary>AI service that delegates to the engine-services HTTP API.</summary>
+/// <summary>AI service that delegates to the engine-ai HTTP API.</summary>
 public class RemoteAIService : IAIService
 {
     private readonly HttpClient _http;
     private readonly ILogger<RemoteAIService> _logger;
 
-    public RemoteAIService(IHttpClientFactory factory, ILogger<RemoteAIService> logger)
+    public RemoteAIService(HttpClient http, ILogger<RemoteAIService> logger)
     {
-        _http = factory.CreateClient("EngineServices");
+        _http = http;
         _logger = logger;
     }
 

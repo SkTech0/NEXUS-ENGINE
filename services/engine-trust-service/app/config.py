@@ -14,7 +14,7 @@ class ServiceConfig:
 def load_config() -> ServiceConfig:
     return ServiceConfig(
         host=os.getenv("ENGINE_TRUST_SERVICE_HOST", "0.0.0.0"),
-        port=int(os.getenv("ENGINE_TRUST_SERVICE_PORT", "5014")),
+        port=int(os.getenv("PORT", os.getenv("ENGINE_TRUST_SERVICE_PORT", "5014"))),
         service_name=os.getenv("SERVICE_NAME", "engine-trust-service"),
         log_level=os.getenv("LOG_LEVEL", "INFO"),
     )

@@ -1,0 +1,57 @@
+# Multi-Service Railway Deployment
+
+NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (engine-api) and six engine services, each deployed as its own Railway service.
+
+## Topology
+
+| Railway Service     | Stack    | Dockerfile                          | Role                    |
+|---------------------|----------|-------------------------------------|-------------------------|
+| engine-api          | .NET 10  | `deploy/railway/engine-api/Dockerfile` | Gateway / orchestrator  |
+| engine-ai           | Python 3.11 | `deploy/railway/engine-ai/Dockerfile` | AI inference            |
+| engine-intelligence | Python 3.11 | `deploy/railway/engine-intelligence/Dockerfile` | Intelligence / Engine execute |
+| engine-trust        | Python 3.11 | `deploy/railway/engine-trust/Dockerfile` | Trust verify/score      |
+| engine-data         | Python 3.11 | `deploy/railway/engine-data/Dockerfile` | Data query/index        |
+| engine-optimization | Python 3.11 | `deploy/railway/engine-optimization/Dockerfile` | Optimization            |
+| engine-distributed  | Python 3.11 | `deploy/railway/engine-distributed/Dockerfile` | Distributed coordination |
+
+## Request Flow
+
+- **Client** → **engine-api** (gateway) only. No direct client → engine access.
+- **engine-api** routes to each engine over HTTP using per-engine BaseUrl.
+
+## Deploying Each Service on Railway
+
+1. Create **one Railway project** and **seven services** (or reuse one project with multiple services).
+2. For each service:
+   - **Deploy from same repo** (this repo).
+   - **Root directory**: repo root (leave default).
+   - **Dockerfile path**: set per service:
+     - engine-api: `deploy/railway/engine-api/Dockerfile`
+     - engine-ai: `deploy/railway/engine-ai/Dockerfile`
+     - engine-intelligence: `deploy/railway/engine-intelligence/Dockerfile`
+     - engine-trust: `deploy/railway/engine-trust/Dockerfile`
+     - engine-data: `deploy/railway/engine-data/Dockerfile`
+     - engine-optimization: `deploy/railway/engine-optimization/Dockerfile`
+     - engine-distributed: `deploy/railway/engine-distributed/Dockerfile`
+3. **Generate a public domain** for each service (Settings → Networking → Generate Domain).
+4. **engine-api only**: set these variables (use the generated URLs from step 3):
+
+   | Variable                    | Example value                          |
+   |----------------------------|----------------------------------------|
+   | `ENGINES_AI_BASE_URL`      | `https://engine-ai-xxx.up.railway.app` |
+   | `ENGINES_INTELLIGENCE_BASE_URL` | `https://engine-intelligence-xxx.up.railway.app` |
+   | `ENGINES_TRUST_BASE_URL`   | `https://engine-trust-xxx.up.railway.app` |
+   | `ENGINES_DATA_BASE_URL`    | `https://engine-data-xxx.up.railway.app` |
+   | `ENGINES_OPTIMIZATION_BASE_URL` | `https://engine-optimization-xxx.up.railway.app` |
+   | `ENGINES_DISTRIBUTED_BASE_URL` | `https://engine-distributed-xxx.up.railway.app` |
+
+   All six must be set for **platform mode** (gateway-only; no in-process engines).
+
+## Health
+
+- Each engine: **GET /health** → 200 JSON `{ "status": "healthy", "service": "..." }`.
+- engine-api: **GET /api/Health/live**, **GET /api/Health/ready** (ready checks trust service when in platform mode).
+
+## Build Context
+
+All Dockerfiles assume **build context = repo root**. In Railway, do not set a “Root directory” that changes context; only set the **Dockerfile path** so the Dockerfile location is correct; the context remains the repo root.

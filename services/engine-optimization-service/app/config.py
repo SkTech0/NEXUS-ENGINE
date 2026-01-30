@@ -14,7 +14,7 @@ class ServiceConfig:
 def load_config() -> ServiceConfig:
     return ServiceConfig(
         host=os.getenv("ENGINE_OPTIMIZATION_SERVICE_HOST", "0.0.0.0"),
-        port=int(os.getenv("ENGINE_OPTIMIZATION_SERVICE_PORT", "5013")),
+        port=int(os.getenv("PORT", os.getenv("ENGINE_OPTIMIZATION_SERVICE_PORT", "5013"))),
         service_name=os.getenv("SERVICE_NAME", "engine-optimization-service"),
         log_level=os.getenv("LOG_LEVEL", "INFO"),
     )

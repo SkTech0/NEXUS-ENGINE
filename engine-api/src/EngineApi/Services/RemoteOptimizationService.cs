@@ -5,15 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace EngineApi.Services;
 
-/// <summary>Optimization service that delegates to the engine-services HTTP API.</summary>
+/// <summary>Optimization service that delegates to the engine-optimization HTTP API.</summary>
 public class RemoteOptimizationService : IOptimizationService
 {
     private readonly HttpClient _http;
     private readonly ILogger<RemoteOptimizationService> _logger;
 
-    public RemoteOptimizationService(IHttpClientFactory factory, ILogger<RemoteOptimizationService> logger)
+    public RemoteOptimizationService(HttpClient http, ILogger<RemoteOptimizationService> logger)
     {
-        _http = factory.CreateClient("EngineServices");
+        _http = http;
         _logger = logger;
     }
 

@@ -5,15 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace EngineApi.Services;
 
-/// <summary>Intelligence service that delegates to the engine-services HTTP API.</summary>
+/// <summary>Intelligence service that delegates to the engine-intelligence HTTP API.</summary>
 public class RemoteIntelligenceService : IIntelligenceService
 {
     private readonly HttpClient _http;
     private readonly ILogger<RemoteIntelligenceService> _logger;
 
-    public RemoteIntelligenceService(IHttpClientFactory factory, ILogger<RemoteIntelligenceService> logger)
+    public RemoteIntelligenceService(HttpClient http, ILogger<RemoteIntelligenceService> logger)
     {
-        _http = factory.CreateClient("EngineServices");
+        _http = http;
         _logger = logger;
     }
 

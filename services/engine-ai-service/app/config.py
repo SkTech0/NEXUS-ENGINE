@@ -17,7 +17,7 @@ class ServiceConfig:
 def load_config() -> ServiceConfig:
     return ServiceConfig(
         host=os.getenv("ENGINE_AI_SERVICE_HOST", "0.0.0.0"),
-        port=int(os.getenv("ENGINE_AI_SERVICE_PORT", "5011")),
+        port=int(os.getenv("PORT", os.getenv("ENGINE_AI_SERVICE_PORT", "5011"))),
         service_name=os.getenv("SERVICE_NAME", "engine-ai-service"),
         log_level=os.getenv("LOG_LEVEL", "INFO"),
     )
