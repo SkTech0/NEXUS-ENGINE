@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  engine-intelligence-service:
+    build:
+      context: ../../services/engine-intelligence-service
+      dockerfile: infra/Dockerfile
+    image: nexus/engine-intelligence-service:latest
+    ports:
+      - "5012:5012"
+    environment:
+      - ENGINE_INTELLIGENCE_SERVICE_PORT=5012
+      - SERVICE_NAME=engine-intelligence-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5012/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+    restart: unless-stopped

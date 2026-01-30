@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  engine-distributed-service:
+    build:
+      context: ../../services/engine-distributed-service
+      dockerfile: infra/Dockerfile
+    image: nexus/engine-distributed-service:latest
+    ports:
+      - "5016:5016"
+    environment:
+      - ENGINE_DISTRIBUTED_SERVICE_PORT=5016
+      - SERVICE_NAME=engine-distributed-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5016/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+    restart: unless-stopped

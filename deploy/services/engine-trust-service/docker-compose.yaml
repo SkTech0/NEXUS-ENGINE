@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  engine-trust-service:
+    build:
+      context: ../../services/engine-trust-service
+      dockerfile: infra/Dockerfile
+    image: nexus/engine-trust-service:latest
+    ports:
+      - "5014:5014"
+    environment:
+      - ENGINE_TRUST_SERVICE_PORT=5014
+      - SERVICE_NAME=engine-trust-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5014/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+    restart: unless-stopped

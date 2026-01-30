@@ -1,0 +1,22 @@
+# engine-ai-service — independent deployment.
+# Additive; does not replace engine-services.
+version: "3.8"
+services:
+  engine-ai-service:
+    build:
+      context: ../../services/engine-ai-service
+      dockerfile: infra/Dockerfile
+    image: nexus/engine-ai-service:latest
+    ports:
+      - "5011:5011"
+    environment:
+      - ENGINE_AI_SERVICE_HOST=0.0.0.0
+      - ENGINE_AI_SERVICE_PORT=5011
+      - SERVICE_NAME=engine-ai-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5011/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped

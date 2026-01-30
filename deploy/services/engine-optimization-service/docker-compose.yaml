@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  engine-optimization-service:
+    build:
+      context: ../../services/engine-optimization-service
+      dockerfile: infra/Dockerfile
+    image: nexus/engine-optimization-service:latest
+    ports:
+      - "5013:5013"
+    environment:
+      - ENGINE_OPTIMIZATION_SERVICE_PORT=5013
+      - SERVICE_NAME=engine-optimization-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5013/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+    restart: unless-stopped
