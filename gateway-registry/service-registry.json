@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Map engine-api → extracted services. Used for dynamic service discovery and routing.",
+  "version": "1.0.0",
+  "services": {
+    "engine-ai-service": {
+      "basePath": "/api/AI",
+      "defaultBaseUrl": "http://localhost:5011",
+      "port": 5011,
+      "healthPath": "/health",
+      "routes": ["/api/AI/infer", "/api/AI/train", "/api/AI/models", "/api/AI/health"]
+    },
+    "engine-intelligence-service": {
+      "basePath": "/api",
+      "defaultBaseUrl": "http://localhost:5012",
+      "port": 5012,
+      "healthPath": "/health",
+      "routes": ["/api/Intelligence/evaluate", "/api/Engine/execute", "/api/Intelligence/health"]
+    },
+    "engine-optimization-service": {
+      "basePath": "/api/Optimization",
+      "defaultBaseUrl": "http://localhost:5013",
+      "port": 5013,
+      "healthPath": "/health",
+      "routes": ["/api/Optimization/optimize", "/api/Optimization/health"]
+    },
+    "engine-trust-service": {
+      "basePath": "/api/Trust",
+      "defaultBaseUrl": "http://localhost:5014",
+      "port": 5014,
+      "healthPath": "/health",
+      "routes": ["/api/Trust/verify", "/api/Trust/score/:entityId", "/api/Trust/health"]
+    },
+    "engine-data-service": {
+      "basePath": "/api/Data",
+      "defaultBaseUrl": "http://localhost:5015",
+      "port": 5015,
+      "healthPath": "/health",
+      "routes": ["/api/Data/query", "/api/Data/index", "/api/Data/health"]
+    },
+    "engine-distributed-service": {
+      "basePath": "/api/Distributed",
+      "defaultBaseUrl": "http://localhost:5016",
+      "port": 5016,
+      "healthPath": "/health",
+      "routes": ["/api/Distributed/replicate", "/api/Distributed/coordinate", "/api/Distributed/health"]
+    }
+  },
+  "gateway": {
+    "engine-api-base": "http://localhost:5000",
+    "legacy-engine-services": "http://localhost:5001"
+  }
+}
