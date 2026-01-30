@@ -10,7 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 var enginesBaseUrl = config["Engines:BaseUrl"]?.TrimEnd('/');
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<EngineApi.Filters.RequestValidationFilter>();
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -69,6 +72,10 @@ builder.Services.AddScoped<LoanDecisionService>();
 
 var app = builder.Build();
 
+// ERL-4: Correlation first (so TraceId set for all), then logging, then global exception (catches from pipeline), then gateway
+app.UseMiddleware<EngineApi.Middleware.CorrelationIdMiddleware>();
+app.UseMiddleware<EngineApi.Middleware.RequestLoggingMiddleware>();
+app.UseMiddleware<EngineApi.Middleware.GlobalExceptionMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI();
 

@@ -1,0 +1,17 @@
+{
+  "erlTarget": "ERL-4",
+  "checks": {
+    "engine-core": { "tests": false, "health": false, "notes": "TypeScript contracts; no runtime tests in this repo" },
+    "engine-data": { "tests": true, "path": "engine-data", "health": false },
+    "engine-intelligence": { "tests": true, "path": "engine-intelligence", "health": true, "healthPath": "/api/Intelligence/health" },
+    "engine-ai": { "tests": true, "path": "engine-ai", "health": true, "healthPath": "/api/AI/health" },
+    "engine-trust": { "tests": true, "path": "engine-trust", "health": true, "healthPath": "/api/Trust/health" },
+    "engine-optimization": { "tests": true, "path": "engine-optimization", "health": true, "healthPath": "/api/Optimization/health" },
+    "engine-distributed": { "tests": true, "path": "engine-distributed", "health": false },
+    "engine-api": { "tests": true, "path": "engine-api", "dotnet": true, "health": true, "healthPath": "/api/Health" }
+  },
+  "enterpriseCriteria": {
+    "ERL-4": ["resilience", "observability", "slo_runbooks", "incident_dr", "support_process"],
+    "ERL-5": ["api_versioning", "certified_perf_stability", "sla_error_budget", "authn_authz", "market_docs"]
+  }
+}
