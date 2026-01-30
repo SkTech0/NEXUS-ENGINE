@@ -1,0 +1,28 @@
+# Structured logging config per service.
+# Each service must emit structured logs. Additive.
+
+version: "1.0"
+description: "Per-service logging for NEXUS extracted services"
+
+default:
+  level: info
+  format: json
+  fields:
+    - service
+    - timestamp
+    - level
+    - message
+    - request_id
+    - trace_id
+    - span_id
+
+levels:
+  engine-ai-service: info
+  engine-intelligence-service: info
+  engine-optimization-service: info
+  engine-trust-service: info
+  engine-data-service: info
+  engine-distributed-service: info
+
+output: stdout
+redact: [password, token, authorization, api_key]

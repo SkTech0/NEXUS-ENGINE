@@ -1,0 +1,40 @@
+# Metrics config per service. Each service must emit metrics.
+# Additive; does not change engine internals.
+
+version: "1.0"
+description: "Per-service metrics for NEXUS extracted services"
+
+default:
+  exporter: prometheus
+  endpoint: ${METRICS_ENDPOINT:-http://localhost:9090}
+  path: /metrics
+  intervalSeconds: 15
+
+counters:
+  - name: requests_total
+    labels: [service, method, path, status]
+  - name: errors_total
+    labels: [service, method, path, error_type]
+  - name: engine_calls_total
+    labels: [service, operation]
+
+histograms:
+  - name: request_duration_seconds
+    labels: [service, method, path]
+    buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5]
+  - name: engine_call_duration_seconds
+    labels: [service, operation]
+    buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2]
+
+gauges:
+  - name: health_status
+    labels: [service]
+    values: [0, 1]
+
+services:
+  engine-ai-service: {}
+  engine-intelligence-service: {}
+  engine-optimization-service: {}
+  engine-trust-service: {}
+  engine-data-service: {}
+  engine-distributed-service: {}

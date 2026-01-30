@@ -1,0 +1,41 @@
+# Tracing config per service (extracted engine-* services).
+# Each service must emit traces. Additive; does not change engine internals.
+
+version: "1.0"
+description: "Per-service tracing for NEXUS extracted services"
+
+services:
+  engine-ai-service:
+    serviceName: engine-ai-service
+    sampler: parent-based
+    exporter: otlp
+    endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4317}
+  engine-intelligence-service:
+    serviceName: engine-intelligence-service
+    sampler: parent-based
+    exporter: otlp
+    endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4317}
+  engine-optimization-service:
+    serviceName: engine-optimization-service
+    sampler: parent-based
+    exporter: otlp
+    endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4317}
+  engine-trust-service:
+    serviceName: engine-trust-service
+    sampler: parent-based
+    exporter: otlp
+    endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4317}
+  engine-data-service:
+    serviceName: engine-data-service
+    sampler: parent-based
+    exporter: otlp
+    endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4317}
+  engine-distributed-service:
+    serviceName: engine-distributed-service
+    sampler: parent-based
+    exporter: otlp
+    endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4317}
+
+propagation:
+  format: w3c
+  header: traceparent
