@@ -1,0 +1,28 @@
+# Retry policy for service-to-service calls.
+# Additive; applied by gateway or client libraries.
+
+version: "1.0"
+description: "Retries, backoff, idempotency"
+
+default:
+  maxRetries: 3
+  initialDelayMs: 100
+  maxDelayMs: 5000
+  backoff: exponential
+  retryableStatuses: [408, 429, 500, 502, 503, 504]
+  retryableErrors: [ECONNRESET, ETIMEDOUT, ECONNREFUSED]
+
+idempotency:
+  safeMethods: [GET]
+  idempotentPosts:
+    - /api/AI/infer
+    - /api/Optimization/optimize
+    - /api/Trust/verify
+    - /api/Data/query
+    - /api/Data/index
+    - /api/Distributed/replicate
+    - /api/Distributed/coordinate
+  requestIdHeader: X-Request-Id
+
+perService: {}
+# Optional overrides per service name

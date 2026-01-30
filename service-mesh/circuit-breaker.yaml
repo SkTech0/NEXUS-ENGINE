@@ -1,0 +1,25 @@
+# Circuit breaker and failure isolation.
+# Additive; applied by gateway or client libraries.
+
+version: "1.0"
+description: "Circuit breaker, failure isolation, fallback routing"
+
+default:
+  failureThreshold: 5
+  successThreshold: 2
+  windowMs: 10000
+  halfOpenRequests: 1
+
+states:
+  closed: "normal traffic"
+  open: "reject immediately; no upstream call"
+  halfOpen: "allow limited requests to test recovery"
+
+fallback:
+  enabled: true
+  legacyEngineServicesUrl: "http://localhost:5001"
+  description: "When a circuit is open, engine-api may route to legacy engine-services if configured."
+
+isolation:
+  perService: true
+  description: "Each engine-* service has its own circuit; one failure does not open others."

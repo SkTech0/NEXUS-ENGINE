@@ -1,0 +1,23 @@
+# Timeout policy for service-to-service calls.
+# Additive; applied by gateway or client libraries.
+
+version: "1.0"
+description: "Timeouts per operation"
+
+default:
+  connectTimeoutMs: 2000
+  readTimeoutMs: 10000
+  writeTimeoutMs: 5000
+
+perPath:
+  "/api/AI/infer": { readTimeoutMs: 30000 }
+  "/api/AI/train": { readTimeoutMs: 60000 }
+  "/api/Optimization/optimize": { readTimeoutMs: 15000 }
+  "/api/Intelligence/evaluate": { readTimeoutMs: 15000 }
+  "/api/Engine/execute": { readTimeoutMs: 10000 }
+  "/api/Trust/verify": { readTimeoutMs: 5000 }
+  "/api/Data/query": { readTimeoutMs: 15000 }
+  "/api/Data/index": { readTimeoutMs: 20000 }
+  "/api/Distributed/replicate": { readTimeoutMs: 30000 }
+  "/api/Distributed/coordinate": { readTimeoutMs: 15000 }
+  "/health": { readTimeoutMs: 2000 }

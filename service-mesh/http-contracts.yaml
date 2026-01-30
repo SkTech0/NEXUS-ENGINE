@@ -1,0 +1,69 @@
+# HTTP contracts between engine-api and extracted services.
+# Additive; does not change existing API contracts.
+
+version: "1.0"
+description: "Internal HTTP contracts for service-to-service calls"
+
+contracts:
+  engine-ai-service:
+    base: "/api/AI"
+    endpoints:
+      - method: POST
+        path: /api/AI/infer
+        request: { modelId: string, inputs: object }
+        response: { outputs: object, latencyMs: number, modelId: string }
+      - method: POST
+        path: /api/AI/train
+        request: { jobId?: string }
+        response: { status: string, jobId?: string }
+  engine-intelligence-service:
+    base: "/api"
+    endpoints:
+      - method: POST
+        path: /api/Intelligence/evaluate
+        request: { context: string, inputs: object }
+        response: { outcome: string, confidence: number, payload: object }
+      - method: POST
+        path: /api/Engine/execute
+        request: { action: string, parameters: object }
+        response: { status: string, result: object, message?: string }
+  engine-optimization-service:
+    base: "/api/Optimization"
+    endpoints:
+      - method: POST
+        path: /api/Optimization/optimize
+        request: { targetId: string, objective: string, constraints: object }
+        response: { targetId: string, value: number, feasible: boolean }
+  engine-trust-service:
+    base: "/api/Trust"
+    endpoints:
+      - method: POST
+        path: /api/Trust/verify
+        request: object
+        response: { valid: boolean, message: string }
+  engine-data-service:
+    base: "/api/Data"
+    endpoints:
+      - method: POST
+        path: /api/Data/query
+        request: { query: object }
+        response: { results: array, count: number }
+      - method: POST
+        path: /api/Data/index
+        request: object
+        response: { status: string, indexed: number }
+  engine-distributed-service:
+    base: "/api/Distributed"
+    endpoints:
+      - method: POST
+        path: /api/Distributed/replicate
+        request: object
+        response: { status: string, replicated: number }
+      - method: POST
+        path: /api/Distributed/coordinate
+        request: object
+        response: { status: string, coordinated: boolean }
+
+health:
+  path: /health
+  response: { status: string, service: string }
