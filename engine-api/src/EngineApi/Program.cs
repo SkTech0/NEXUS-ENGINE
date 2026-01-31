@@ -39,6 +39,9 @@ var distributedBase = config["Engines:Distributed:BaseUrl"]?.TrimEnd('/');
 var platformMode = !string.IsNullOrEmpty(aiBase) && !string.IsNullOrEmpty(intelligenceBase) && !string.IsNullOrEmpty(trustBase)
     && !string.IsNullOrEmpty(dataBase) && !string.IsNullOrEmpty(optimizationBase) && !string.IsNullOrEmpty(distributedBase);
 
+// Immediate stdout — visible in Railway logs before any request
+Console.WriteLine($"[EngineApi] Engine config: PlatformMode={platformMode}, EnginesLoaded={envConfig.Count}");
+
 // Trim URLs to avoid invalid URIs from trailing/leading whitespace (common in env vars)
 static string? TrimUrl(string? u) => u?.Trim();
 aiBase = TrimUrl(aiBase);
