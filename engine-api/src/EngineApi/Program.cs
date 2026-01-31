@@ -39,6 +39,15 @@ var distributedBase = config["Engines:Distributed:BaseUrl"]?.TrimEnd('/');
 var platformMode = !string.IsNullOrEmpty(aiBase) && !string.IsNullOrEmpty(intelligenceBase) && !string.IsNullOrEmpty(trustBase)
     && !string.IsNullOrEmpty(dataBase) && !string.IsNullOrEmpty(optimizationBase) && !string.IsNullOrEmpty(distributedBase);
 
+// Trim URLs to avoid invalid URIs from trailing/leading whitespace (common in env vars)
+static string? TrimUrl(string? u) => u?.Trim();
+aiBase = TrimUrl(aiBase);
+intelligenceBase = TrimUrl(intelligenceBase);
+trustBase = TrimUrl(trustBase);
+dataBase = TrimUrl(dataBase);
+optimizationBase = TrimUrl(optimizationBase);
+distributedBase = TrimUrl(distributedBase);
+
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<EngineApi.Filters.RequestValidationFilter>();
@@ -119,6 +128,12 @@ static string ResolvePlatformBaseUrl(IConfiguration config, string? enginesBaseU
 builder.Services.AddScoped<LoanDecisionService>();
 
 var app = builder.Build();
+
+// Log engine config at startup (no URLs to avoid secrets in logs)
+var logFactory = app.Services.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+var log = logFactory.CreateLogger("Startup");
+log.LogInformation("Engine config: PlatformMode={PlatformMode}, EnginesLoaded={Count}",
+    platformMode, envConfig.Count);
 
 // ERL-4: Correlation first (so TraceId set for all), then logging, then global exception (catches from pipeline), then gateway
 app.UseMiddleware<EngineApi.Middleware.CorrelationIdMiddleware>();

@@ -48,7 +48,8 @@ public class HealthController : ControllerBase
             try
             {
                 var client = _httpClientFactory.CreateClient("EngineServices");
-                var response = await client.GetAsync("health", ct).ConfigureAwait(false);
+                // Trust service exposes /api/Trust/health (not /health)
+                var response = await client.GetAsync("api/Trust/health", ct).ConfigureAwait(false);
                 checks.Add(new HealthCheckItem("engines", response.IsSuccessStatusCode ? "healthy" : "unhealthy", response.StatusCode.ToString()));
             }
             catch (Exception ex)
