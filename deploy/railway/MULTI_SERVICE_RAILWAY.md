@@ -13,6 +13,7 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
 | engine-data         | Python 3.11 | `deploy/railway/engine-data/Dockerfile` | Data query/index        |
 | engine-optimization | Python 3.11 | `deploy/railway/engine-optimization/Dockerfile` | Optimization            |
 | engine-distributed  | Python 3.11 | `deploy/railway/engine-distributed/Dockerfile` | Distributed coordination |
+| **product-ui**      | Angular + nginx | `deploy/railway/product-ui/Dockerfile` | Static SPA (Playground, Loan, Trust, etc.) |
 
 ## Request Flow
 
@@ -21,7 +22,7 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
 
 ## Deploying Each Service on Railway
 
-1. Create **one Railway project** and **seven services** (or reuse one project with multiple services).
+1. Create **one Railway project** and **eight services** (or reuse one project with multiple services).
 2. For each service:
    - **Deploy from same repo** (this repo).
    - **Root directory**: **leave empty** (repo root). Do NOT set a root directory — the Dockerfile expects the full repo as build context (e.g. `engine-api/` must exist).
@@ -33,6 +34,7 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
      - engine-data: `deploy/railway/engine-data/railway.toml`
      - engine-optimization: `deploy/railway/engine-optimization/railway.toml`
      - engine-distributed: `deploy/railway/engine-distributed/railway.toml`
+     - product-ui: `deploy/railway/product-ui/railway.toml`
      Each file sets the correct Dockerfile path and **healthcheck path** for that service.
    - **Dockerfile path** (if not using config file): set per service:
      - engine-api: `deploy/railway/engine-api/Dockerfile`
@@ -42,6 +44,7 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
      - engine-data: `deploy/railway/engine-data/Dockerfile`
      - engine-optimization: `deploy/railway/engine-optimization/Dockerfile`
      - engine-distributed: `deploy/railway/engine-distributed/Dockerfile`
+     - product-ui: `deploy/railway/product-ui/Dockerfile`
 3. **Generate a public domain** for each service (Settings → Networking → Generate Domain).
 4. **engine-api only**: set these variables (use the generated URLs from step 3):
 
@@ -67,6 +70,7 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
 | engine-data | `deploy/railway/engine-data/railway.toml` | `/api/Data/health` |
 | engine-optimization | `deploy/railway/engine-optimization/railway.toml` | `/api/Optimization/health` |
 | engine-distributed | `deploy/railway/engine-distributed/railway.toml` | `/api/Distributed/health` |
+| product-ui | `deploy/railway/product-ui/railway.toml` | `/` |
 
 **Config File Path:** For each service, go to **Settings → Config-as-code → Add File Path** and set the path above (e.g. `deploy/railway/engine-data/railway.toml` for engine-data). Each file defines the correct Dockerfile and healthcheck path, so deployments will pass.
 

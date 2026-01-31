@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import {
   EngineService,
   EngineExecuteResponse,
@@ -34,7 +35,7 @@ export interface LoanDomainEvaluateResponse {
  */
 @Injectable({ providedIn: 'root' })
 export class LoanEngineService {
-  private readonly baseUrl = '/api';
+  private readonly baseUrl = environment?.apiUrl ?? '/api';
 
   constructor(
     private readonly engine: EngineService,

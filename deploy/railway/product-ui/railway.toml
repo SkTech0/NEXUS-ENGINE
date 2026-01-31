@@ -1,0 +1,11 @@
+# Product UI — static SPA served by nginx on Railway.
+# Config path: deploy/railway/product-ui/railway.toml (set in Railway Service → Settings → Config-as-code).
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "deploy/railway/product-ui/Dockerfile"
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"

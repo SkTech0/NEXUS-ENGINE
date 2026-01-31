@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface EngineExecuteResponse {
   status?: string;
@@ -36,8 +37,7 @@ export interface TrustHealthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class EngineService {
-  // Use relative /api so Angular dev-server proxy can avoid CORS.
-  private readonly baseUrl = '/api';
+  private readonly baseUrl = environment?.apiUrl ?? '/api';
 
   constructor(private readonly http: HttpClient) {}
 
