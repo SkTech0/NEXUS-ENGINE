@@ -1,6 +1,6 @@
 #!/bin/sh
-# Run engine-services (Python FastAPI) on port 5001.
-# Use with engine-api: set Engines:BaseUrl=http://localhost:5001 and run engine-api (run-api.sh).
+# Run engine-services (Python FastAPI) on port 5002.
+# Use with engine-api: Engines__BaseUrl=http://localhost:5002 (run-api-with-engines.sh).
 # Usage: ./run-engine-services.sh
 
 set -e
@@ -25,4 +25,7 @@ fi
 . "$VENV_DIR/bin/activate"
 pip install -q -r "$ENGINE_SERVICES_DIR/requirements.txt"
 
-exec python3 -m uvicorn main:app --host 0.0.0.0 --port 5001 --app-dir "$ENGINE_SERVICES_DIR"
+# Port 5002 to avoid conflict with engine-api (5000/5001)
+# Run from engine-services dir so cwd is not repo root (avoids platform/ namespace shadowing stdlib)
+cd "$ENGINE_SERVICES_DIR"
+exec python3 -m uvicorn main:app --host 0.0.0.0 --port 5002

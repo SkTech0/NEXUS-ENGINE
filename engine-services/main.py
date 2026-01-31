@@ -1,7 +1,7 @@
 """
 Engine Services — HTTP API that wraps engine-ai, engine-optimization, engine-intelligence, engine-trust.
 Exposes the same contract as engine-api's controllers so engine-api can call this service instead of stubs.
-Run: uvicorn main:app --host 0.0.0.0 --port 5001
+Run: uvicorn main:app --host 0.0.0.0 --port 5002
 """
 import os
 import sys
@@ -13,6 +13,10 @@ for name in ("engine-ai", "engine-optimization", "engine-intelligence", "engine-
     d = REPO_ROOT / name
     if d.is_dir() and str(d) not in sys.path:
         sys.path.insert(0, str(d))
+# Add engine-ai-service for real ML models
+_ai_svc_path = REPO_ROOT / "services" / "engine-ai-service"
+if _ai_svc_path.is_dir() and str(_ai_svc_path) not in sys.path:
+    sys.path.insert(0, str(_ai_svc_path))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,7 +46,7 @@ def engine_status():
 
 # ---- AI (infer) ----
 def _loan_infer_outputs(inputs: dict) -> dict:
-    """Derive riskScore and confidence from loan-like inputs."""
+    """Fallback: derive riskScore and confidence from loan-like inputs."""
     if not isinstance(inputs, dict):
         return {"riskScore": 0.5, "confidence": 0.5}
     credit = inputs.get("creditScore")
@@ -59,26 +63,34 @@ def _loan_infer_outputs(inputs: dict) -> dict:
     return {"riskScore": round(risk, 4), "confidence": round(min(1.0, confidence), 4)}
 
 
+def _ai_infer_with_real_models(model_id: str, inputs: dict) -> dict | None:
+    """Use real ML models from engine-ai-service if available."""
+    try:
+        from app.service import infer as ai_infer
+        return ai_infer(model_id, inputs if isinstance(inputs, dict) else {})
+    except Exception:
+        return None
+
+
 @app.post("/api/AI/infer")
 def ai_infer(body: dict):
-    """Run inference. Returns outputs, latencyMs, modelId."""
+    """Run inference. Returns outputs, latencyMs, modelId. Uses real ML models when available."""
     model_id = body.get("modelId") or "default"
     inputs = body.get("inputs") or {}
-    try:
-        from inference.inference_service import create_inference_service, InferenceRequest
-        svc = create_inference_service()
-        svc.set_model_loader(lambda _: "default")
-        svc.set_predict_fn(lambda _m, i: _loan_infer_outputs(i))
-        req = InferenceRequest(model_id=model_id, inputs=inputs if isinstance(inputs, dict) else {})
-        resp = svc.infer(req)
-        return {"outputs": resp.outputs, "latencyMs": resp.latency_ms, "modelId": resp.model_id}
-    except Exception:
-        return {"outputs": _loan_infer_outputs(inputs), "latencyMs": 0.0, "modelId": model_id}
+    result = _ai_infer_with_real_models(model_id, inputs)
+    if result is not None:
+        return result
+    return {"outputs": _loan_infer_outputs(inputs), "latencyMs": 0.0, "modelId": model_id}
 
 
 @app.get("/api/AI/models")
 def ai_models():
-    return {"modelIds": ["default"]}
+    """Return available models. Uses real models list when engine-ai-service available."""
+    try:
+        from app.service import list_models
+        return list_models()
+    except Exception:
+        return {"modelIds": ["default"]}
 
 
 @app.get("/api/AI/health")

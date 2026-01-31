@@ -1,17 +1,24 @@
 """
 Adapter layer for engine-ai-service.
-Delegates to engine-core port bindings via adapters.
+Uses real ML models: risk (default) and sentiment.
 """
+import time
 from typing import Any
 
-# Adapter will be injected; this module defines the service interface only.
-# No business logic here — only orchestration to engine adapter.
+from .models.predictor import infer_with_model
 
 
 def infer(model_id: str, inputs: dict[str, Any]) -> dict[str, Any]:
-    """Delegate to engine adapter. Stub response if adapter unavailable."""
-    return {"outputs": inputs, "latencyMs": 0.0, "modelId": model_id}
+    """Run inference with real model. Returns outputs, latencyMs, modelId."""
+    start = time.perf_counter()
+    model_id = model_id or "default"
+    inputs = inputs if isinstance(inputs, dict) else {}
+
+    outputs = infer_with_model(model_id, inputs)
+    latency_ms = (time.perf_counter() - start) * 1000
+
+    return {"outputs": outputs, "latencyMs": round(latency_ms, 2), "modelId": model_id}
 
 
 def list_models() -> dict[str, Any]:
-    return {"modelIds": ["default"]}
+    return {"modelIds": ["default", "risk", "sentiment"]}
