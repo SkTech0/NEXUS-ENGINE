@@ -25,7 +25,16 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
 2. For each service:
    - **Deploy from same repo** (this repo).
    - **Root directory**: repo root (leave default).
-   - **Dockerfile path**: set per service:
+   - **Config File Path** (Settings → Config-as-code): set to use the correct `railway.toml` per service:
+     - engine-api: `deploy/railway/engine-api/railway.toml`
+     - engine-ai: `deploy/railway/engine-ai/railway.toml`
+     - engine-intelligence: `deploy/railway/engine-intelligence/railway.toml`
+     - engine-trust: `deploy/railway/engine-trust/railway.toml`
+     - engine-data: `deploy/railway/engine-data/railway.toml`
+     - engine-optimization: `deploy/railway/engine-optimization/railway.toml`
+     - engine-distributed: `deploy/railway/engine-distributed/railway.toml`
+     Each file sets the correct Dockerfile path and **healthcheck path** for that service.
+   - **Dockerfile path** (if not using config file): set per service:
      - engine-api: `deploy/railway/engine-api/Dockerfile`
      - engine-ai: `deploy/railway/engine-ai/Dockerfile`
      - engine-intelligence: `deploy/railway/engine-intelligence/Dockerfile`
@@ -49,8 +58,17 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
 
 ## Health
 
-- Each engine: **GET /health** → 200 JSON `{ "status": "healthy", "service": "..." }`.
-- engine-api: **GET /api/Health/live**, **GET /api/Health/ready** (ready checks trust service when in platform mode).
+| Service | Config File | Healthcheck Path |
+|---------|-------------|------------------|
+| engine-api | `deploy/railway/engine-api/railway.toml` | `/api/Health/live` |
+| engine-ai | `deploy/railway/engine-ai/railway.toml` | `/api/AI/health` |
+| engine-intelligence | `deploy/railway/engine-intelligence/railway.toml` | `/api/Intelligence/health` |
+| engine-trust | `deploy/railway/engine-trust/railway.toml` | `/api/Trust/health` |
+| engine-data | `deploy/railway/engine-data/railway.toml` | `/api/Data/health` |
+| engine-optimization | `deploy/railway/engine-optimization/railway.toml` | `/api/Optimization/health` |
+| engine-distributed | `deploy/railway/engine-distributed/railway.toml` | `/api/Distributed/health` |
+
+**Config File Path:** For each service, go to **Settings → Config-as-code → Add File Path** and set the path above (e.g. `deploy/railway/engine-data/railway.toml` for engine-data). Each file defines the correct Dockerfile and healthcheck path, so deployments will pass.
 
 ## Build Context
 

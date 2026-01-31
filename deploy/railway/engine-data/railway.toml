@@ -1,0 +1,8 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "deploy/railway/engine-data/Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/Data/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
