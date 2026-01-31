@@ -64,16 +64,17 @@
                   : 'Ready'
         }}
       </div>
-      <div class="confidence" *ngIf="confidenceFrom(s.results) as c">
-        <div class="confidence__label">Confidence</div>
+      <div class="confidence" *ngIf="confidenceFrom(s.results) as c" [title]="decisionConfidenceTooltip">
+        <div class="confidence__label">Decision Confidence (at execution time)</div>
         <div class="confidence__value">{{ (c * 100) | number: '1.0-0' }}%</div>
       </div>
     </div>
 
     <!-- Explainability: confidence derivation -->
     <section class="card" *ngIf="confidenceFrom(s.results) != null">
-      <div class="section__title">Confidence</div>
-      <div class="card__hint">{{ confidenceSource(s.results) }}</div>
+      <div class="section__title">Decision Confidence (at execution time)</div>
+      <div class="card__hint">{{ decisionConfidenceTooltip }}</div>
+      <div class="card__hint" style="margin-top: 6px;">{{ confidenceSource(s.results) }}</div>
     </section>
 
     <!-- Input -->

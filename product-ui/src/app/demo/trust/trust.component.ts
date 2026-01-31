@@ -57,14 +57,23 @@ export class TrustComponent {
     }
   }
 
-  confidenceFrom(results: any): number | null {
-    const c1 = results?.evaluate?.confidence;
-    if (typeof c1 === 'number') return c1;
-    const c2 = results?.infer?.confidence;
-    if (typeof c2 === 'number') return c2;
-    const c3 = this.health?.confidence;
-    if (typeof c3 === 'number') return c3;
-    return null;
+  /** Trust confidence captured at pipeline execution time (from run snapshot). */
+  trustAtDecisionTime(results: unknown): number | null {
+    const c = (results as { trust?: { confidence?: number } })?.trust?.confidence;
+    return typeof c === 'number' ? c : null;
+  }
+
+  /** Live trust confidence from /api/Trust/health (time-dependent). */
+  get currentTrustConfidence(): number | null {
+    const c = this.health?.confidence;
+    return typeof c === 'number' ? c : null;
+  }
+
+  /** For indicators: prefer live trust when available, else trust-at-decision, else null. */
+  trustConfidenceForIndicators(results: unknown): number | null {
+    const live = this.currentTrustConfidence;
+    if (live != null) return live;
+    return this.trustAtDecisionTime(results);
   }
 
   indicatorsFrom(results: any): RiskIndicatorView[] {
@@ -77,7 +86,7 @@ export class TrustComponent {
       }));
     }
 
-    const confidence = this.confidenceFrom(results);
+    const confidence = this.trustConfidenceForIndicators(results);
     const confLevel: RiskLevel =
       typeof confidence !== 'number' ? 'medium' : confidence >= 0.75 ? 'low' : confidence >= 0.5 ? 'medium' : 'high';
 
@@ -86,16 +95,16 @@ export class TrustComponent {
 
     return [
       {
-        name: 'Confidence signal',
+        name: 'Platform trust signal',
         level: confLevel,
         message:
           typeof confidence !== 'number'
-            ? 'Confidence not provided. Review decision output for clarity.'
+            ? 'Platform trust not available. Refresh to fetch live trust, or run a pipeline to capture trust at decision time.'
             : confidence >= 0.75
-              ? 'High confidence. The system is comfortable with this outcome.'
+              ? 'High platform trust. The system reports healthy readiness.'
               : confidence >= 0.5
-                ? 'Moderate confidence. Consider a quick human review.'
-                : 'Low confidence. Strongly consider human approval or alternate options.',
+                ? 'Moderate platform trust. Consider monitoring health.'
+                : 'Low platform trust. Review service health and dependencies.',
       },
       {
         name: 'Execution stability',

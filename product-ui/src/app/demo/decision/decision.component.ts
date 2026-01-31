@@ -14,6 +14,9 @@ export class DecisionComponent {
   private readonly state = inject(StateService);
   readonly state$ = this.state.state$;
 
+  readonly decisionConfidenceTooltip =
+    'This value represents confidence at the moment the decision was made, based on Intelligence, AI inference, and Trust signals.';
+
   pretty(value: unknown): string {
     if (value == null) return '—';
     if (typeof value === 'string') return value;

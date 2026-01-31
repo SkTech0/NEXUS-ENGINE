@@ -60,22 +60,33 @@
       </div>
     </section>
 
+    <!-- Current Platform Trust (live, from /api/Trust/health) -->
     <section class="card">
-      <div class="card__title">Confidence</div>
-      <div class="score" *ngIf="confidenceFrom(s.results) as c; else noScore">
-        <div class="score__value">{{ (c * 100) | number: '1.0-0' }}%</div>
-        <div class="score__label">Combined confidence from run or Trust service</div>
+      <div class="card__title">Current Platform Trust</div>
+      <div class="score" *ngIf="currentTrustConfidence != null; else noLiveTrust">
+        <div class="score__value">{{ (currentTrustConfidence ?? 0) * 100 | number: '1.0-0' }}%</div>
+        <div class="score__label score__label--muted">Live trust confidence may change over time as platform health changes.</div>
       </div>
-      <ng-template #noScore>
-        <div class="empty-state__body" style="margin: 0;">No confidence score from services or current run.</div>
+      <ng-template #noLiveTrust>
+        <div class="empty-state__body" style="margin: 0;">Click Refresh to fetch current platform trust from the Trust service.</div>
       </ng-template>
+    </section>
+
+    <!-- Trust at decision time (from run snapshot, when historical data exists) -->
+    <section class="card trust-snapshot" *ngIf="trustAtDecisionTime(s.results) !== null">
+      <div class="card__title">Trust at decision time</div>
+      <div class="card__hint">Snapshot from pipeline run — does not change over time.</div>
+      <div class="score">
+        <div class="score__value">{{ ((trustAtDecisionTime(s.results) ?? 0) * 100) | number: '1.0-0' }}%</div>
+        <div class="score__label">Trust confidence when this run completed.</div>
+      </div>
     </section>
   </div>
 
   <!-- Risk indicators -->
   <div class="section__title">Risk indicators</div>
   <section class="card">
-    <div class="card__hint">Derived from confidence, execution stability, and Trust API when available.</div>
+    <div class="card__hint">Derived from platform trust, execution stability, and Trust API when available.</div>
     <div class="indicators">
       <div class="indicator" *ngFor="let i of indicatorsFrom(s.results)">
         <div class="indicator__top">

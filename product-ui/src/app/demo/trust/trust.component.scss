@@ -129,6 +129,15 @@
   opacity: 0.75;
 }
 
+.score__label--muted {
+  opacity: 0.65;
+  font-size: 12px;
+}
+
+.trust-snapshot {
+  border-left: 3px solid #94a3b8;
+}
+
 .indicators {
   display: grid;
   gap: 10px;
