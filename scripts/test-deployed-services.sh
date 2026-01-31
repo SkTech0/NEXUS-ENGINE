@@ -76,6 +76,29 @@ check_engine() {
   fi
 }
 
+# Try primary path, then /health fallback (some deployments may only expose root /health)
+check_engine_with_fallback() {
+  name="$1"
+  base="$2"
+  primary_path="$3"
+  if [ -z "$base" ]; then
+    echo "  [SKIP] $name — no URL provided"
+    return 0
+  fi
+  url="${base%/}$primary_path"
+  if $CURL "$url" >/dev/null 2>&1; then
+    echo "  [OK]   $name — $url"
+    return 0
+  fi
+  url="${base%/}/health"
+  if $CURL "$url" >/dev/null 2>&1; then
+    echo "  [OK]   $name — $url (fallback)"
+    return 0
+  fi
+  echo "  [FAIL] $name — ${base%/}$primary_path and $url both failed"
+  FAILED=$((FAILED + 1))
+}
+
 check_json() {
   name="$1"
   url="$2"
@@ -104,9 +127,9 @@ echo ""
 check_engine "engine-ai"         "$AI_URL" "/api/AI/health"
 check_engine "engine-intelligence" "$INTEL_URL" "/api/Intelligence/health"
 check_engine "engine-trust"      "$TRUST_URL" "/api/Trust/health"
-check_engine "engine-data"       "$DATA_URL" "/api/Data/health"
+check_engine_with_fallback "engine-data"       "$DATA_URL" "/api/Data/health"
 check_engine "engine-optimization" "$OPT_URL" "/api/Optimization/health"
-check_engine "engine-distributed" "$DIST_URL" "/api/Distributed/health"
+check_engine_with_fallback "engine-distributed" "$DIST_URL" "/api/Distributed/health"
 echo ""
 
 # ---- 2. engine-api gateway ----
