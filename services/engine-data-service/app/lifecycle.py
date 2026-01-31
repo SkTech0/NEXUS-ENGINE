@@ -14,8 +14,16 @@ def on_shutdown(fn: Callable[[], None]) -> None:
 
 
 def _startup_data_engine() -> None:
-    from app.domain_facade import init_engine
-    init_engine()
+    import logging
+    try:
+        from app.domain_facade import init_engine
+        init_engine()
+    except Exception as e:
+        logging.getLogger("engine-data-service").warning(
+            "data engine init failed; health will work, data ops will return ENGINE_UNAVAILABLE. %s",
+            e,
+            exc_info=True,
+        )
 
 
 on_startup(_startup_data_engine)

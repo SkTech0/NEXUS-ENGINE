@@ -10,8 +10,10 @@ import logging
 from pathlib import Path
 from typing import Any
 
-# Bootstrap path so engine-data domain is importable when running from repo
-_engine_data_root = Path(__file__).resolve().parents[3] / "engine-data"
+# Bootstrap path so engine-data domain is importable when running from repo.
+# In Docker /app/app/domain_facade.py has only 3 parents; avoid parents[3] to prevent IndexError.
+_resolved = Path(__file__).resolve()
+_engine_data_root = (_resolved.parents[3] / "engine-data") if len(_resolved.parents) > 3 else Path("/__no_engine_data__")
 if _engine_data_root.exists():
     import sys
     _path = str(_engine_data_root)
@@ -47,7 +49,7 @@ def init_engine() -> None:
     """
     Initialize domain engines: document store, indexing, pipeline, cache, validation.
     Idempotent; safe to call from lifecycle startup.
-    If engine-data is not on path, logs and leaves engine uninitialized (health still works).
+    If engine-data is not on path or any error occurs, logs and leaves engine uninitialized (health still works).
     """
     global _engine_context
     try:
