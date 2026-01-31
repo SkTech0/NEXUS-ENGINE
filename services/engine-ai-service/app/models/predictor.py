@@ -122,7 +122,8 @@ def create_predictor() -> RiskPredictor:
 
 def infer_with_model(model_id: str, inputs: dict[str, Any]) -> dict[str, Any]:
     """Route to appropriate model and return outputs."""
-    if model_id in ("sentiment", "text"):
+    mid = (model_id or "").strip().lower()
+    if mid in ("sentiment", "text"):
         return _sentiment_predict(inputs)
     # default, risk, or any other id
     return create_predictor().predict(inputs)

@@ -13,9 +13,10 @@ api = APIRouter(prefix="/api/AI", tags=["AI"])
 
 @api.post("/infer")
 def ai_infer(body: dict[str, Any]) -> dict[str, Any]:
-    model_id = body.get("modelId") or body.get("model_id") or "default"
+    model_id = str(body.get("modelId") or body.get("model_id") or "default").strip()
     inputs = body.get("inputs") or {}
-    return svc.infer(model_id, inputs if isinstance(inputs, dict) else {})
+    inputs = inputs if isinstance(inputs, dict) else {}
+    return svc.infer(str(model_id).strip(), inputs)
 
 
 @api.post("/train")

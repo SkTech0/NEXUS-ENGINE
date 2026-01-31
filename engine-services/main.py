@@ -63,6 +63,16 @@ def _loan_infer_outputs(inputs: dict) -> dict:
     return {"riskScore": round(risk, 4), "confidence": round(min(1.0, confidence), 4)}
 
 
+def _simple_sentiment_outputs(inputs: dict) -> dict:
+    """Fallback: simple keyword-based sentiment when real model unavailable."""
+    text = str((inputs or {}).get("text", (inputs or {}).get("query", "")) or "").lower()
+    pos = sum(1 for w in ["good", "great", "love", "excellent", "happy"] if w in text)
+    neg = sum(1 for w in ["bad", "hate", "terrible", "awful", "sad"] if w in text)
+    compound = (pos - neg) / 5.0 if (pos + neg) > 0 else 0.0
+    sentiment = "positive" if compound > 0 else ("negative" if compound < 0 else "neutral")
+    return {"sentiment": sentiment, "compound": round(compound, 4), "confidence": 0.6}
+
+
 def _ai_infer_with_real_models(model_id: str, inputs: dict) -> dict | None:
     """Use real ML models from engine-ai-service if available."""
     try:
@@ -75,12 +85,18 @@ def _ai_infer_with_real_models(model_id: str, inputs: dict) -> dict | None:
 @app.post("/api/AI/infer")
 def ai_infer(body: dict):
     """Run inference. Returns outputs, latencyMs, modelId. Uses real ML models when available."""
-    model_id = body.get("modelId") or "default"
+    model_id = body.get("modelId") or body.get("model_id") or "default"
     inputs = body.get("inputs") or {}
+    inputs = inputs if isinstance(inputs, dict) else {}
     result = _ai_infer_with_real_models(model_id, inputs)
     if result is not None:
         return result
-    return {"outputs": _loan_infer_outputs(inputs), "latencyMs": 0.0, "modelId": model_id}
+    # Fallback: use risk for default/risk, sentiment for sentiment/text
+    if model_id.lower() in ("sentiment", "text"):
+        outputs = _simple_sentiment_outputs(inputs)
+    else:
+        outputs = _loan_infer_outputs(inputs)
+    return {"outputs": outputs, "latencyMs": 0.0, "modelId": model_id}
 
 
 @app.get("/api/AI/models")
