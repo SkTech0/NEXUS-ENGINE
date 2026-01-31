@@ -13,6 +13,14 @@ def on_shutdown(fn: Callable[[], None]) -> None:
     _shutdown_hooks.append(fn)
 
 
+def _startup_data_engine() -> None:
+    from app.domain_facade import init_engine
+    init_engine()
+
+
+on_startup(_startup_data_engine)
+
+
 async def run_startup() -> None:
     for fn in _startup_hooks:
         fn()
