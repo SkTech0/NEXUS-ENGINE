@@ -17,6 +17,10 @@ for name in ("engine-ai", "engine-optimization", "engine-intelligence", "engine-
 _ai_svc_path = REPO_ROOT / "services" / "engine-ai-service"
 if _ai_svc_path.is_dir() and str(_ai_svc_path) not in sys.path:
     sys.path.insert(0, str(_ai_svc_path))
+# Add engine-trust-service for signal-driven confidence
+_trust_svc_path = REPO_ROOT / "services" / "engine-trust-service"
+if _trust_svc_path.is_dir() and str(_trust_svc_path) not in sys.path:
+    sys.path.insert(0, str(_trust_svc_path))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -180,41 +184,38 @@ def intelligence_health():
 
 
 # ---- Trust (health, score) ----
-def _trust_confidence() -> float:
-    """Default trust confidence; could use TrustScoreEngine.get() if we had an entity."""
+def _trust_from_service():
+    """Use engine-trust-service signal-driven confidence when available."""
     try:
-        from security.trust_score import create_trust_score_engine, TrustScore
-        eng = create_trust_score_engine()
-        eng.set_score("system", TrustScore(value=0.85, source="engine-services"))
-        t = eng.get("system")
-        return t.value if t else 0.85
+        from app import service as trust_svc
+        return trust_svc
     except Exception:
-        return 0.85
+        return None
 
 
 @app.get("/api/Trust/health")
 def trust_health():
     """LoanDecisionService expects a JSON with 'confidence' (number)."""
-    return {"status": "healthy", "service": "trust", "confidence": _trust_confidence()}
+    svc = _trust_from_service()
+    if svc is not None:
+        confidence, factors = svc.get_confidence()
+        return {"status": "healthy", "service": "trust", "confidence": confidence, "factors": factors}
+    return {"status": "healthy", "service": "trust", "confidence": 0.9}
 
 
 @app.get("/api/Trust/score/{entity_id}")
 def trust_score(entity_id: str):
-    try:
-        from security.trust_score import create_trust_score_engine, TrustScore
-        eng = create_trust_score_engine()
-        t = eng.get(entity_id)
-        if t:
-            return {"entityId": entity_id, "score": t.value, "source": t.source}
-        eng.set_score(entity_id, TrustScore(value=0.8, source="default"))
-        t = eng.get(entity_id)
-        return {"entityId": entity_id, "score": t.value, "source": t.source or "default"}
-    except Exception:
-        return {"entityId": entity_id, "score": 0.8, "source": "default"}
+    svc = _trust_from_service()
+    if svc is not None:
+        return svc.get_score(entity_id)
+    return {"entityId": entity_id, "score": 0.9, "source": "fallback"}
 
 
 @app.post("/api/Trust/verify")
 def trust_verify(body: dict):
+    svc = _trust_from_service()
+    if svc is not None:
+        return svc.verify(body or {})
     return {"valid": True, "message": "verified"}
 
 
