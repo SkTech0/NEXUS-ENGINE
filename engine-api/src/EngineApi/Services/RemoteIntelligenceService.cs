@@ -8,12 +8,13 @@ namespace EngineApi.Services;
 /// <summary>Intelligence service that delegates to the engine-intelligence HTTP API.</summary>
 public class RemoteIntelligenceService : IIntelligenceService
 {
-    private readonly HttpClient _http;
+    private const string ClientName = "IntelligenceService";
+    private readonly IHttpClientFactory _factory;
     private readonly ILogger<RemoteIntelligenceService> _logger;
 
-    public RemoteIntelligenceService(HttpClient http, ILogger<RemoteIntelligenceService> logger)
+    public RemoteIntelligenceService(IHttpClientFactory factory, ILogger<RemoteIntelligenceService> logger)
     {
-        _http = http;
+        _factory = factory;
         _logger = logger;
     }
 
@@ -21,8 +22,9 @@ public class RemoteIntelligenceService : IIntelligenceService
     {
         try
         {
+            var client = _factory.CreateClient(ClientName);
             var body = new { context = request.Context, inputs = request.Inputs };
-            using var response = _http.PostAsJsonAsync("api/Intelligence/evaluate", body).GetAwaiter().GetResult();
+            using var response = client.PostAsJsonAsync("api/Intelligence/evaluate", body).GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             using var doc = JsonDocument.Parse(json);

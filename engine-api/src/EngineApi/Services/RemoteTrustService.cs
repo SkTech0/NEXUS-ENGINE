@@ -8,12 +8,13 @@ namespace EngineApi.Services;
 /// <summary>Trust service that delegates to the engine-trust HTTP API.</summary>
 public class RemoteTrustService : ITrustService
 {
-    private readonly HttpClient _http;
+    private const string ClientName = "EngineServices";
+    private readonly IHttpClientFactory _factory;
     private readonly ILogger<RemoteTrustService> _logger;
 
-    public RemoteTrustService(HttpClient http, ILogger<RemoteTrustService> logger)
+    public RemoteTrustService(IHttpClientFactory factory, ILogger<RemoteTrustService> logger)
     {
-        _http = http;
+        _factory = factory;
         _logger = logger;
     }
 
@@ -23,8 +24,9 @@ public class RemoteTrustService : ITrustService
             throw new ArgumentNullException(nameof(request));
         try
         {
+            var client = _factory.CreateClient(ClientName);
             var body = new { claimType = request.ClaimType, payload = request.Payload };
-            using var response = _http.PostAsJsonAsync("api/Trust/verify", body).GetAwaiter().GetResult();
+            using var response = client.PostAsJsonAsync("api/Trust/verify", body).GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             using var doc = JsonDocument.Parse(json);
@@ -56,7 +58,8 @@ public class RemoteTrustService : ITrustService
             throw new ArgumentException("entityId is required", nameof(entityId));
         try
         {
-            using var response = _http.GetAsync($"api/Trust/score/{Uri.EscapeDataString(entityId)}").GetAwaiter().GetResult();
+            var client = _factory.CreateClient(ClientName);
+            using var response = client.GetAsync($"api/Trust/score/{Uri.EscapeDataString(entityId)}").GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             using var doc = JsonDocument.Parse(json);

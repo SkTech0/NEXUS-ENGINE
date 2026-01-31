@@ -8,12 +8,13 @@ namespace EngineApi.Services;
 /// <summary>Engine service that delegates to the engine-intelligence HTTP API (api/Engine).</summary>
 public class RemoteEngineService : IEngineService
 {
-    private readonly HttpClient _http;
+    private const string ClientName = "IntelligenceService";
+    private readonly IHttpClientFactory _factory;
     private readonly ILogger<RemoteEngineService> _logger;
 
-    public RemoteEngineService(HttpClient http, ILogger<RemoteEngineService> logger)
+    public RemoteEngineService(IHttpClientFactory factory, ILogger<RemoteEngineService> logger)
     {
-        _http = http;
+        _factory = factory;
         _logger = logger;
     }
 
@@ -21,7 +22,8 @@ public class RemoteEngineService : IEngineService
     {
         try
         {
-            using var response = _http.GetAsync("api/Engine").GetAwaiter().GetResult();
+            var client = _factory.CreateClient(ClientName);
+            using var response = client.GetAsync("api/Engine").GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             return ParseEngineResponse(json);
@@ -47,8 +49,9 @@ public class RemoteEngineService : IEngineService
     {
         try
         {
+            var client = _factory.CreateClient(ClientName);
             var body = new { request.Action, request.Parameters };
-            using var response = _http.PostAsJsonAsync("api/Engine/execute", body).GetAwaiter().GetResult();
+            using var response = client.PostAsJsonAsync("api/Engine/execute", body).GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             return ParseEngineResponse(json);

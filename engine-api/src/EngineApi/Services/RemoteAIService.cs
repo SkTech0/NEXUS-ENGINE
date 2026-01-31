@@ -9,12 +9,13 @@ namespace EngineApi.Services;
 /// <summary>AI service that delegates to the engine-ai HTTP API.</summary>
 public class RemoteAIService : IAIService
 {
-    private readonly HttpClient _http;
+    private const string ClientName = "AIService";
+    private readonly IHttpClientFactory _factory;
     private readonly ILogger<RemoteAIService> _logger;
 
-    public RemoteAIService(HttpClient http, ILogger<RemoteAIService> logger)
+    public RemoteAIService(IHttpClientFactory factory, ILogger<RemoteAIService> logger)
     {
-        _http = http;
+        _factory = factory;
         _logger = logger;
     }
 
@@ -22,8 +23,9 @@ public class RemoteAIService : IAIService
     {
         try
         {
+            var client = _factory.CreateClient(ClientName);
             var body = new { modelId = request.ModelId, inputs = request.Inputs };
-            using var response = _http.PostAsJsonAsync("api/AI/infer", body).GetAwaiter().GetResult();
+            using var response = client.PostAsJsonAsync("api/AI/infer", body).GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             return ParseInferResponse(json, request.ModelId);
@@ -49,7 +51,8 @@ public class RemoteAIService : IAIService
     {
         try
         {
-            using var response = _http.GetAsync("api/AI/models").GetAwaiter().GetResult();
+            var client = _factory.CreateClient(ClientName);
+            using var response = client.GetAsync("api/AI/models").GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             using var doc = JsonDocument.Parse(json);

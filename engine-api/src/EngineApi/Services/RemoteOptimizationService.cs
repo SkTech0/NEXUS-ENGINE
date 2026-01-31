@@ -8,12 +8,13 @@ namespace EngineApi.Services;
 /// <summary>Optimization service that delegates to the engine-optimization HTTP API.</summary>
 public class RemoteOptimizationService : IOptimizationService
 {
-    private readonly HttpClient _http;
+    private const string ClientName = "OptimizationService";
+    private readonly IHttpClientFactory _factory;
     private readonly ILogger<RemoteOptimizationService> _logger;
 
-    public RemoteOptimizationService(HttpClient http, ILogger<RemoteOptimizationService> logger)
+    public RemoteOptimizationService(IHttpClientFactory factory, ILogger<RemoteOptimizationService> logger)
     {
-        _http = http;
+        _factory = factory;
         _logger = logger;
     }
 
@@ -21,8 +22,9 @@ public class RemoteOptimizationService : IOptimizationService
     {
         try
         {
+            var client = _factory.CreateClient(ClientName);
             var body = new { request.TargetId, request.Objective, request.Constraints };
-            using var response = _http.PostAsJsonAsync("api/Optimization/optimize", body).GetAwaiter().GetResult();
+            using var response = client.PostAsJsonAsync("api/Optimization/optimize", body).GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             using var doc = JsonDocument.Parse(json);

@@ -24,7 +24,7 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
 1. Create **one Railway project** and **seven services** (or reuse one project with multiple services).
 2. For each service:
    - **Deploy from same repo** (this repo).
-   - **Root directory**: repo root (leave default).
+   - **Root directory**: **leave empty** (repo root). Do NOT set a root directory — the Dockerfile expects the full repo as build context (e.g. `engine-api/` must exist).
    - **Config File Path** (Settings → Config-as-code): set to use the correct `railway.toml` per service:
      - engine-api: `deploy/railway/engine-api/railway.toml`
      - engine-ai: `deploy/railway/engine-ai/railway.toml`
@@ -72,4 +72,4 @@ NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (en
 
 ## Build Context
 
-All Dockerfiles assume **build context = repo root**. In Railway, do not set a “Root directory” that changes context; only set the **Dockerfile path** so the Dockerfile location is correct; the context remains the repo root.
+All Dockerfiles assume **build context = repo root**. **Root directory must be empty** — if set to a subdirectory, the build fails with "Project file does not exist". In Railway, do not set a “Root directory” that changes context; only set the **Dockerfile path** so the Dockerfile location is correct; the context remains the repo root.
