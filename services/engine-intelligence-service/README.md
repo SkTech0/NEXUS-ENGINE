@@ -4,9 +4,13 @@ Independent service wrapping engine-intelligence.
 
 ## Responsibility
 
-- Wraps engine-intelligence
+- Wraps engine-intelligence domain (request evaluator)
 - Exposes: `/api/Intelligence/evaluate`, `/api/Engine/execute`, `/health`
-- Independent deployment, scaling, failure domain
+- Evaluation uses `evaluate_request()` — product-neutral, evidence-based confidence
+
+## Evaluation
+
+`/api/Intelligence/evaluate` accepts `{ context, inputs }` and returns `{ outcome, confidence, payload }` plus optional `reasoning`, `signals`. Confidence is computed from evidence strength (structure, numerics, nesting); outcome is `insufficient`, `evaluated`, or `strong`.
 
 ## Local run
 

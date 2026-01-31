@@ -149,33 +149,28 @@ def optimization_health():
 
 
 # ---- Intelligence (evaluate) ----
-def _evaluate_loan(context: str, inputs: dict):
-    """Outcome and confidence from pipeline inputs (application, engine, ai, optimization)."""
-    app = (inputs or {}).get("application") if isinstance(inputs, dict) else {}
-    if not isinstance(app, dict):
-        app = {}
-    credit = float(app.get("creditScore") or 650)
-    conf = 0.5 + (credit / 850.0) * 0.45
-    outcome = "evaluated"
-    if credit >= 750:
-        outcome = "approved"
-    elif credit < 550:
-        outcome = "rejected"
-    return outcome, round(min(1.0, conf), 4)
-
-
 @app.post("/api/Intelligence/evaluate")
 def intelligence_evaluate(body: dict):
+    """Evaluate using engine-intelligence domain (request_evaluator)."""
     context = body.get("context") or ""
     inputs = body.get("inputs") or {}
+    inputs = inputs if isinstance(inputs, dict) else {}
     try:
-        from evaluation.evaluator import create_evaluator, EvalSample, EvalResult
-        ev = create_evaluator()
-        outcome, confidence = _evaluate_loan(context, inputs)
-        return {"outcome": outcome, "confidence": confidence, "payload": inputs}
+        from evaluation.request_evaluator import evaluate_request
+
+        result = evaluate_request(context, inputs)
+        out = {"outcome": result.outcome, "confidence": result.confidence, "payload": result.payload}
+        if result.reasoning:
+            out["reasoning"] = result.reasoning
+        if result.signals:
+            out["signals"] = result.signals
+        return out
     except Exception:
-        outcome, confidence = _evaluate_loan(context, inputs)
-        return {"outcome": outcome, "confidence": confidence, "payload": inputs}
+        # Fallback: minimal deterministic response
+        num_keys = len(inputs)
+        confidence = min(1.0, 0.5 + num_keys * 0.1)
+        outcome = "insufficient" if num_keys == 0 else "evaluated"
+        return {"outcome": outcome, "confidence": round(confidence, 4), "payload": inputs}
 
 
 @app.get("/api/Intelligence/health")
