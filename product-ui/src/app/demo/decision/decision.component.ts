@@ -40,8 +40,10 @@ export class DecisionComponent {
     const trustC = typeof r?.trust?.confidence === 'number' ? r.trust.confidence : null;
     const values = [evalC, inferC, trustC].filter((x): x is number => x != null);
     if (values.length === 0) return null;
-    if (values.length === 1) return values[0] ?? null;
-    return values.reduce((a, b) => a + b, 0) / values.length;
+    const first = values[0];
+    if (values.length === 1 && first != null) return first;
+    if (values.length > 1) return values.reduce((a, b) => a + b, 0) / values.length;
+    return null;
   }
 
   /** Confidence derivation explainability: which engine contributed. */
