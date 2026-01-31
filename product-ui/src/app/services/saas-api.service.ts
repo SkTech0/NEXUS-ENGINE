@@ -46,10 +46,9 @@ export class SaasApiService {
     value: number,
     unit: string = 'count'
   ): Observable<{ tenant_id: string; metric: string; value: number; unit: string }> {
-    return this.http.post(`${this.baseUrl}/tenants/${tenantId}/usage`, {
-      metric,
-      value,
-      unit,
-    });
+    return this.http.post<{ tenant_id: string; metric: string; value: number; unit: string }>(
+      `${this.baseUrl}/tenants/${tenantId}/usage`,
+      { metric, value, unit }
+    );
   }
 }

@@ -2,6 +2,8 @@
 
 NEXUS-ENGINE can run on Railway as a **multi-service platform**: one gateway (engine-api) and six engine services, each deployed as its own Railway service.
 
+> **Using split repos (nexus-engine-data, nexus-engine-intelligence, etc.)?** See **[docs/RAILWAY_DEPLOY_MULTI_REPO.md](../../docs/RAILWAY_DEPLOY_MULTI_REPO.md)** for deployment with one repo per service.
+
 ## Topology
 
 | Railway Service     | Stack    | Dockerfile                          | Role                    |

@@ -77,7 +77,8 @@ export class TenantsComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err?.message ?? 'Failed to load tenants. Is the SaaS API service running on port 5001?';
+        this.error =
+          err?.message ?? 'SaaS API is not available. Deploy saas-api-service for tenant management.';
         this.loading = false;
       },
     });
