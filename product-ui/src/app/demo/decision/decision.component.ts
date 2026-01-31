@@ -25,20 +25,42 @@ export class DecisionComponent {
   }
 
   confidenceFrom(results: unknown): number | null {
-    const r = results as { evaluate?: { confidence?: number }; infer?: { confidence?: number } } | undefined;
-    if (typeof r?.evaluate?.confidence === 'number') return r.evaluate.confidence;
-    if (typeof r?.infer?.confidence === 'number') return r.infer.confidence;
-    return null;
+    const r = results as {
+      evaluate?: { confidence?: number };
+      infer?: { confidence?: number; outputs?: { confidence?: number } };
+      trust?: { confidence?: number };
+    } | undefined;
+    const evalC = typeof r?.evaluate?.confidence === 'number' ? r.evaluate.confidence : null;
+    const inferC =
+      typeof r?.infer?.confidence === 'number'
+        ? r.infer.confidence
+        : typeof r?.infer?.outputs?.confidence === 'number'
+          ? r.infer.outputs.confidence
+          : null;
+    const trustC = typeof r?.trust?.confidence === 'number' ? r.trust.confidence : null;
+    const values = [evalC, inferC, trustC].filter((x): x is number => x != null);
+    if (values.length === 0) return null;
+    if (values.length === 1) return values[0];
+    return values.reduce((a, b) => a + b, 0) / values.length;
   }
 
   /** Confidence derivation explainability: which engine contributed. */
   confidenceSource(results: unknown): string {
-    const r = results as { evaluate?: { confidence?: number }; infer?: { confidence?: number } } | undefined;
-    if (typeof r?.evaluate?.confidence === 'number' && typeof r?.infer?.confidence === 'number')
-      return 'Intelligence Evaluation and AI Inference.';
-    if (typeof r?.evaluate?.confidence === 'number') return 'Intelligence Evaluation.';
-    if (typeof r?.infer?.confidence === 'number') return 'AI Inference.';
-    return 'Not available from this run.';
+    const r = results as {
+      evaluate?: { confidence?: number };
+      infer?: { confidence?: number; outputs?: { confidence?: number } };
+      trust?: { confidence?: number };
+    } | undefined;
+    const hasEval = typeof r?.evaluate?.confidence === 'number';
+    const hasInfer =
+      typeof r?.infer?.confidence === 'number' || typeof r?.infer?.outputs?.confidence === 'number';
+    const hasTrust = typeof r?.trust?.confidence === 'number';
+    const parts: string[] = [];
+    if (hasEval) parts.push('Intelligence Evaluation');
+    if (hasInfer) parts.push('AI Inference');
+    if (hasTrust) parts.push('Trust');
+    if (parts.length === 0) return 'Not available from this run.';
+    return parts.join(', ') + '.';
   }
 
   /** Partial success: at least one step succeeded and at least one failed. */
