@@ -1,4 +1,4 @@
-# Platform Layer
+# Platform Layer (Phase 12 — Ecosystem)
 
 Plugins, integrations, marketplace, API registry, and extension framework.
 
@@ -14,10 +14,10 @@ Plugins, integrations, marketplace, API registry, and extension framework.
 
 ## Usage
 
-From repo root with `PYTHONPATH=platform`:
+From repo root with `PYTHONPATH=.` (use a path that includes the parent of the `platform` folder so the package name does not shadow stdlib):
 
 ```bash
-cd c:\NEXUS-ENGINE
-set PYTHONPATH=platform
+cd NEXUS-ENGINE
+set PYTHONPATH=.
 python -c "from platform import create_plugin_engine; e = create_plugin_engine(); print(e.list_plugins())"
 ```

@@ -3,8 +3,10 @@
  * - Same host: use '/api' and proxy /api to the backend.
  * - Different host (e.g. UI and Engine API on separate Railway services): set the full API origin
  *   including /api, e.g. https://your-engine-api.up.railway.app/api
+ * saasApiUrl: base for SaaS API (tenants, usage). Use '/api/saas' if same host, or full SaaS API origin.
  */
 export const environment = {
   production: true,
   apiUrl: 'https://helpful-optimism-production-7709.up.railway.app/api',
+  saasApiUrl: '/api/saas',
 };

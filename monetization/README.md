@@ -1,4 +1,4 @@
-# Monetization Engine
+# Monetization Engine (Phase 11 — Revenue core)
 
 Pricing, billing, payments, invoices, and revenue tracking.
 
@@ -12,13 +12,22 @@ Pricing, billing, payments, invoices, and revenue tracking.
 | **invoice_engine.py** | InvoiceEngine — create, get, list_for_tenant |
 | **revenue_tracker.py** | RevenueTracker — record, get_total, get_summary |
 
+## Integration with SaaS layer (billing hooks)
+
+Wire subscription events to monetization using `saas-layer/billing/billing_hooks.py`:
+
+- `create_on_subscribe_hook(billing_callback)` — call `billing_engine.create_event`, `revenue_tracker.record`, or `payment_gateway.charge` when a tenant subscribes.
+- `create_on_cancel_hook(billing_callback)` — call billing/usage cleanup when a tenant cancels.
+
+Example: set `subscription_service.set_billing_hook_subscribe(hook)` with a callback that creates a billing event and records revenue for the tenant/plan.
+
 ## Usage
 
-From repo root with `PYTHONPATH=monetization`:
+From repo root with `PYTHONPATH=.`:
 
 ```bash
-cd c:\NEXUS-ENGINE
-set PYTHONPATH=monetization
+cd NEXUS-ENGINE
+set PYTHONPATH=.
 python -c "from monetization import create_pricing_engine; e = create_pricing_engine(); print(e.compute('basic', 10))"
 ```
 

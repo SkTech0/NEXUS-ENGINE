@@ -1,4 +1,10 @@
 {
+  "/api/saas": {
+    "target": "http://localhost:5001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "warn"
+  },
   "/api": {
     "target": "http://localhost:5000",
     "secure": false,

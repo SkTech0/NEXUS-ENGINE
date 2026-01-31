@@ -1,4 +1,4 @@
-# Enterprise Layer
+# Enterprise Layer (Phase 13 — Enterprise readiness)
 
 Compliance, governance, SLA, enterprise auth, and policy.
 
@@ -12,12 +12,14 @@ Compliance, governance, SLA, enterprise auth, and policy.
 | **enterprise_auth.py** | EnterpriseAuth — set_validator, verify(token); org hierarchy (add_org, get_ancestors) |
 | **policy_engine.py** | PolicyEngine — add_policy, evaluate(context) → PolicyResult (allow/deny) |
 
+Compliance is canonical at `enterprise/compliance_engine.py`; `enterprise/compliance/` re-exports for subpackage use.
+
 ## Usage
 
-From repo root with `PYTHONPATH=enterprise` (or parent of enterprise):
+From repo root with `PYTHONPATH=.`:
 
 ```bash
-cd c:\NEXUS-ENGINE
+cd NEXUS-ENGINE
 set PYTHONPATH=.
 python -c "from enterprise import create_compliance_engine; e = create_compliance_engine(); print(e.check({}))"
 ```

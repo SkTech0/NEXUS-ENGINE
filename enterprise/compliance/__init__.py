@@ -1,5 +1,5 @@
-"""Enterprise compliance (canonical)."""
-from .compliance_engine import (
+"""Enterprise compliance — re-exports from root compliance_engine."""
+from ..compliance_engine import (
     ComplianceEngine,
     ComplianceResult,
     ComplianceRule,

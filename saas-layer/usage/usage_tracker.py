@@ -1,7 +1,8 @@
 """
 Usage tracker — track usage per tenant/metric; report and limits.
-Modular, testable.
+Modular, testable. Optional timestamp for usage windows and billing.
 """
+import time
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -14,6 +15,7 @@ class UsageRecord:
     metric: str
     value: float
     unit: str = "count"
+    timestamp: float = field(default_factory=time.time)
 
 
 @dataclass
@@ -36,9 +38,17 @@ class UsageTracker:
         self._records: list[UsageRecord] = []
         self._limits: dict[tuple[str, str], float] = {}
 
-    def record(self, tenant_id: str, metric: str, value: float, unit: str = "count") -> UsageRecord:
-        """Record usage. Testable."""
-        rec = UsageRecord(tenant_id=tenant_id, metric=metric, value=value, unit=unit)
+    def record(
+        self,
+        tenant_id: str,
+        metric: str,
+        value: float,
+        unit: str = "count",
+        timestamp: float | None = None,
+    ) -> UsageRecord:
+        """Record usage. Optional timestamp for backfill; default is now. Testable."""
+        ts = timestamp if timestamp is not None else time.time()
+        rec = UsageRecord(tenant_id=tenant_id, metric=metric, value=value, unit=unit, timestamp=ts)
         self._records.append(rec)
         return rec
 
