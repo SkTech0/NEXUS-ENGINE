@@ -58,6 +58,17 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// CORS: allow Product UI (and other frontends) to call this API from a different origin.
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 // Repositories
 builder.Services.AddSingleton<IEngineRepository, EngineRepository>();
 
@@ -140,6 +151,7 @@ log.LogInformation("Engine config: PlatformMode={PlatformMode}, EnginesLoaded={C
 app.UseMiddleware<EngineApi.Middleware.CorrelationIdMiddleware>();
 app.UseMiddleware<EngineApi.Middleware.RequestLoggingMiddleware>();
 app.UseMiddleware<EngineApi.Middleware.GlobalExceptionMiddleware>();
+app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI();
 
