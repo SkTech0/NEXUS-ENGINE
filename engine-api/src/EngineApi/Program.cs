@@ -62,18 +62,22 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IEngineRepository, EngineRepository>();
 
 // Gateway: platform mode (per-engine URLs) or legacy (single Engines:BaseUrl) or in-process stubs
+// Use named clients (typed clients can fail to get BaseAddress on some hosts); bind typed clients to named config
 if (platformMode)
 {
     builder.Services.AddHttpClient("EngineServices", client => client.BaseAddress = new Uri(trustBase!.TrimEnd('/') + "/"));
-    builder.Services.AddHttpClient<RemoteAIService>(client => client.BaseAddress = new Uri(aiBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient("AIService", client => client.BaseAddress = new Uri(aiBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient("IntelligenceService", client => client.BaseAddress = new Uri(intelligenceBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient("OptimizationService", client => client.BaseAddress = new Uri(optimizationBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient<RemoteAIService>("AIService");
     builder.Services.AddScoped<IAIService, RemoteAIService>();
-    builder.Services.AddHttpClient<RemoteIntelligenceService>(client => client.BaseAddress = new Uri(intelligenceBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient<RemoteIntelligenceService>("IntelligenceService");
     builder.Services.AddScoped<IIntelligenceService, RemoteIntelligenceService>();
-    builder.Services.AddHttpClient<RemoteEngineService>(client => client.BaseAddress = new Uri(intelligenceBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient<RemoteEngineService>("IntelligenceService");
     builder.Services.AddScoped<IEngineService, RemoteEngineService>();
-    builder.Services.AddHttpClient<RemoteOptimizationService>(client => client.BaseAddress = new Uri(optimizationBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient<RemoteOptimizationService>("OptimizationService");
     builder.Services.AddScoped<IOptimizationService, RemoteOptimizationService>();
-    builder.Services.AddHttpClient<RemoteTrustService>(client => client.BaseAddress = new Uri(trustBase!.TrimEnd('/') + "/"));
+    builder.Services.AddHttpClient<RemoteTrustService>("EngineServices");
     builder.Services.AddScoped<ITrustService, RemoteTrustService>();
 }
 else if (!string.IsNullOrEmpty(enginesBaseUrl))
@@ -81,15 +85,19 @@ else if (!string.IsNullOrEmpty(enginesBaseUrl))
     if (!Uri.TryCreate(enginesBaseUrl.TrimEnd('/') + "/", UriKind.Absolute, out var baseUri) || !baseUri.IsAbsoluteUri)
         throw new InvalidOperationException(
             "Engines:BaseUrl must be a valid absolute URL (e.g. http://localhost:5001). Check configuration.");
-    builder.Services.AddHttpClient<RemoteAIService>(client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient("EngineServices", client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient("AIService", client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient("IntelligenceService", client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient("OptimizationService", client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient<RemoteAIService>("AIService");
     builder.Services.AddScoped<IAIService, RemoteAIService>();
-    builder.Services.AddHttpClient<RemoteIntelligenceService>(client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient<RemoteIntelligenceService>("IntelligenceService");
     builder.Services.AddScoped<IIntelligenceService, RemoteIntelligenceService>();
-    builder.Services.AddHttpClient<RemoteEngineService>(client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient<RemoteEngineService>("IntelligenceService");
     builder.Services.AddScoped<IEngineService, RemoteEngineService>();
-    builder.Services.AddHttpClient<RemoteOptimizationService>(client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient<RemoteOptimizationService>("OptimizationService");
     builder.Services.AddScoped<IOptimizationService, RemoteOptimizationService>();
-    builder.Services.AddHttpClient<RemoteTrustService>(client => client.BaseAddress = baseUri);
+    builder.Services.AddHttpClient<RemoteTrustService>("EngineServices");
     builder.Services.AddScoped<ITrustService, RemoteTrustService>();
 }
 else
