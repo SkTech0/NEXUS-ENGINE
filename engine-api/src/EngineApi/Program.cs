@@ -143,7 +143,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseApiGateway();
-if (!app.Environment.IsDevelopment())
+// Skip HTTPS redirect when behind proxy (Railway, Cloud Run) — proxy handles TLS
+var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "";
+if (!app.Environment.IsDevelopment() && urls.Contains("https", StringComparison.OrdinalIgnoreCase))
     app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
