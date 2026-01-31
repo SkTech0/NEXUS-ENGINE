@@ -1,5 +1,33 @@
 .dashboard {
   padding: 1.5rem;
+  display: grid;
+  gap: 14px;
+}
+
+.dashboard .page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dashboard .kicker {
+  font-size: 12px;
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard .title {
+  margin: 6px 0 4px;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+
+.dashboard .subtitle {
+  margin: 0;
+  opacity: 0.8;
 }
 
 .dashboard__header {

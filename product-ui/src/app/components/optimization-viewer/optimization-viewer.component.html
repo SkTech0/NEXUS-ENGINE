@@ -1,26 +1,66 @@
-<section class="optimization-viewer">
-  <header class="optimization-viewer__header">
-    <h2>Optimization Viewer</h2>
-    <p class="optimization-viewer__subtitle">Run and inspect optimization results</p>
-  </header>
-  @if (error) {
-    <div class="optimization-viewer__error">{{ error }}</div>
-  }
-  <div class="optimization-viewer__form">
-    <label>
-      Target ID
-      <input type="text" [(ngModel)]="targetId" [disabled]="loading" />
-    </label>
-    <button type="button" (click)="runOptimization()" [disabled]="loading">
-      Run optimization
-    </button>
-  </div>
-  @if (result) {
-    <div class="optimization-viewer__result">
-      <h3>Result</h3>
-      <p>Target: {{ result.targetId }}</p>
-      <p>Value: {{ result.value }}</p>
-      <p>Feasible: {{ result.feasible }}</p>
+<section class="optimization-viewer page">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Optimization</div>
+      <h1 class="title">Optimization Viewer</h1>
+      <p class="subtitle">Run and inspect optimization results. Input → Processing → Output.</p>
     </div>
-  }
+  </div>
+
+  <!-- Explicit error state -->
+  <div class="error-state" *ngIf="error && !loading">
+    <strong>Optimization error:</strong> {{ error }}
+  </div>
+
+  <!-- Metadata / state clarity -->
+  <section class="card">
+    <div class="section__title">Metadata</div>
+    <div class="metadata">
+      <div class="metadata__row">
+        <span class="metadata__label">State</span>
+        <span class="metadata__value">{{ loading ? 'Loading' : error ? 'Error' : result ? 'Completed' : 'Idle' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Input -->
+  <div class="section__title">Input</div>
+  <section class="card">
+    <div class="card__title">Target ID</div>
+    <div class="card__hint">Target identifier for the optimization run.</div>
+    <div class="optimization-viewer__form">
+      <label>
+        <span class="metadata__label">Target ID</span>
+        <input type="text" [(ngModel)]="targetId" [disabled]="loading" />
+      </label>
+      <button type="button" class="btn btn--primary" (click)="runOptimization()" [disabled]="loading">
+        {{ loading ? 'Running…' : 'Run optimization' }}
+      </button>
+    </div>
+  </section>
+
+  <!-- Output -->
+  <div class="section__title">Output</div>
+  <div class="empty-state" *ngIf="!loading && !result && !error">
+    <div class="empty-state__title">No result yet</div>
+    <div class="empty-state__body">Enter a target ID and click Run optimization to see the result.</div>
+  </div>
+  <section class="card" *ngIf="result">
+    <div class="card__title">Optimization result</div>
+    <div class="card__hint">Target, value, and feasibility from Optimization service.</div>
+    <div class="metadata">
+      <div class="metadata__row">
+        <span class="metadata__label">Target ID</span>
+        <span class="metadata__value">{{ result.targetId ?? '—' }}</span>
+      </div>
+      <div class="metadata__row">
+        <span class="metadata__label">Value</span>
+        <span class="metadata__value">{{ result.value ?? '—' }}</span>
+      </div>
+      <div class="metadata__row">
+        <span class="metadata__label">Feasible</span>
+        <span class="metadata__value">{{ result.feasible }}</span>
+      </div>
+    </div>
+  </section>
 </section>

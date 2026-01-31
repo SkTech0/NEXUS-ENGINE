@@ -1,7 +1,7 @@
 {
   "/api": {
-    "target": "http://localhost:5000",
-    "secure": false,
+    "target": "https://helpful-optimism-production-7709.up.railway.app",
+    "secure": true,
     "changeOrigin": true,
     "logLevel": "warn"
   }

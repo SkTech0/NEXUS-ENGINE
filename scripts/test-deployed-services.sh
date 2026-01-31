@@ -25,7 +25,14 @@
 #       https://engine-data.up.railway.app \
 #       https://engine-optimization.up.railway.app \
 #       https://engine-distributed.up.railway.app
-#
+#./scripts/test-deployed-services.sh \
+#  "https://helpful-optimism-production-7709.up.railway.app" \
+#  "https://helpful-freedom-production.up.railway.app" \
+#  "https://terrific-passion-production-d212.up.railway.app" \
+#  "https://responsible-balance-production-930d.up.railway.app" \
+#  "https://engine-data-production.up.railway.app" \
+#  "https://engine-optimization-production.up.railway.app" \
+#  "https://engine-distributed-production.up.railway.app"
 # Note: Use -k with curl if your URLs use self-signed certs (e.g. -k flag not needed for Railway).
 
 set -e

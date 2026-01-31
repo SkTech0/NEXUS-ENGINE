@@ -23,12 +23,12 @@ export class OptimizationViewerComponent {
     this.error = null;
     this.result = null;
     this.optimizationService.optimize({ targetId: this.targetId }).subscribe({
-next: (r: OptimizationResponse) => {
-          this.result = r;
-          this.loading = false;
-        },
-        error: (err: { message?: string }) => {
-          this.error = err?.message ?? 'Optimization request failed';
+      next: (r: OptimizationResponse) => {
+        this.result = r;
+        this.loading = false;
+      },
+      error: (err: unknown) => {
+        this.error = err instanceof Error ? err.message : 'Optimization request failed';
         this.loading = false;
       },
     });

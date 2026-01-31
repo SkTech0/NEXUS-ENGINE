@@ -29,8 +29,8 @@ export class EngineMonitorComponent implements OnInit {
         this.status = s;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err?.message ?? 'Failed to load status';
+      error: (err: unknown) => {
+        this.error = err instanceof Error ? err.message : 'Failed to load status';
         this.loading = false;
       },
     });
@@ -44,8 +44,8 @@ export class EngineMonitorComponent implements OnInit {
         this.executeResult = r;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err?.message ?? 'Execute failed';
+      error: (err: unknown) => {
+        this.error = err instanceof Error ? err.message : 'Execute failed';
         this.loading = false;
       },
     });

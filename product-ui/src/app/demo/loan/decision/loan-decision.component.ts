@@ -113,4 +113,17 @@ export class LoanDecisionComponent {
       return String(value);
     }
   }
+
+  formatTimestamp(ms: number | null | undefined): string {
+    if (ms == null || !Number.isFinite(ms)) return '—';
+    try {
+      return new Date(ms).toISOString();
+    } catch {
+      return String(ms);
+    }
+  }
+
+  hasRunData(s: { runId: string | null; createdAt: number | null; results: Record<string, unknown> }): boolean {
+    return (s.runId != null && s.createdAt != null) || Object.keys(s.results ?? {}).length > 0;
+  }
 }

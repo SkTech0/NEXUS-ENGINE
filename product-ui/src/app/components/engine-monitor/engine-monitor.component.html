@@ -1,23 +1,72 @@
-<section class="engine-monitor">
-  <header class="engine-monitor__header">
-    <h2>Engine Monitor</h2>
-    <button type="button" (click)="refreshStatus()" [disabled]="loading">Refresh</button>
-  </header>
-  @if (error) {
-    <div class="engine-monitor__error">{{ error }}</div>
-  }
-  @if (loading && !status) {
-    <p>Loading…</p>
-  }
-  @if (status) {
-    <div class="engine-monitor__status">
-      <span class="badge">Status: {{ status.status }}</span>
+<section class="engine-monitor page">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Engine</div>
+      <h1 class="title">Engine Monitor</h1>
+      <p class="subtitle">Engine status and execute response. Read-only inspection.</p>
     </div>
-  }
-  <div class="engine-monitor__actions">
-    <button type="button" (click)="execute()" [disabled]="loading">Execute ping</button>
+    <button type="button" class="btn btn--primary" (click)="refreshStatus()" [disabled]="loading">
+      {{ loading && !status ? 'Loading…' : 'Refresh' }}
+    </button>
   </div>
-  @if (executeResult) {
-    <pre class="engine-monitor__result">{{ executeResult | json }}</pre>
-  }
+
+  <!-- Explicit error state -->
+  <div class="error-state" *ngIf="error && !loading">
+    <strong>Engine error:</strong> {{ error }}
+  </div>
+
+  <!-- Metadata / state clarity -->
+  <section class="card">
+    <div class="section__title">Metadata</div>
+    <div class="metadata">
+      <div class="metadata__row">
+        <span class="metadata__label">State</span>
+        <span class="metadata__value">{{ loading ? 'Loading' : error ? 'Error' : status ? 'Loaded' : 'Not loaded' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Status -->
+  <div class="section__title">Status</div>
+  <div class="empty-state" *ngIf="!loading && !status && !error">
+    <div class="empty-state__title">No status data</div>
+    <div class="empty-state__body">Click Refresh to fetch engine status.</div>
+  </div>
+  <section class="card" *ngIf="status">
+    <div class="card__title">Engine status</div>
+    <div class="pillrow">
+      <span
+        class="pill"
+        [ngClass]="{
+          'pill--ok': status?.status === 'ok' || status?.status === 'healthy',
+          'pill--bad': status?.status !== 'ok' && status?.status !== 'healthy',
+          'pill--idle': !status?.status
+        }"
+      >
+        {{ status?.status ?? 'Unknown' }}
+      </span>
+    </div>
+    <div class="card__hint" *ngIf="status?.message">{{ status.message }}</div>
+  </section>
+
+  <!-- Input (execute ping) -->
+  <div class="section__title">Actions</div>
+  <section class="card">
+    <div class="card__title">Execute ping</div>
+    <div class="card__hint">Sends action: ping. No parameters. Use to verify engine responsiveness.</div>
+    <button type="button" class="btn btn--primary" (click)="execute()" [disabled]="loading" style="margin-top: 10px;">
+      Execute ping
+    </button>
+  </section>
+
+  <!-- Output -->
+  <div class="section__title">Output</div>
+  <div class="empty-state" *ngIf="!loading && !executeResult && !error">
+    <div class="empty-state__body">Execute ping has not been run yet. Click Execute ping above.</div>
+  </div>
+  <section class="card" *ngIf="executeResult">
+    <div class="card__title">Execute result</div>
+    <div class="card__hint">Response from Engine execute (ping).</div>
+    <pre class="pre">{{ executeResult | json }}</pre>
+  </section>
 </section>

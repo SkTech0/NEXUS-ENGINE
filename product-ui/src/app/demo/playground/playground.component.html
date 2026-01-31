@@ -3,9 +3,8 @@
     <div>
       <div class="kicker">Playground</div>
       <h1 class="title">Run a Decision Flow</h1>
-      <p class="subtitle">Enter input and launch a guided execution experience—designed for humans, not logs.</p>
+      <p class="subtitle">Enter input and launch execution. Engine → AI → Optimization → Evaluation → Trust.</p>
     </div>
-
     <div class="actions">
       <a class="btn btn--ghost" routerLink="/">Back</a>
       <button class="btn btn--primary" (click)="run()">Run Decision Flow</button>
@@ -19,7 +18,13 @@
     <button class="pill" [class.pill--active]="mode === 'json'" (click)="onToggleMode('json')">JSON</button>
   </div>
 
+  <!-- Explicit error state -->
+  <div class="error-state" *ngIf="jsonError">
+    {{ jsonError }}
+  </div>
+
   <div class="content" *ngIf="mode === 'structured'">
+    <div class="section__title">Input — scenario</div>
     <div class="card">
       <div class="card__title">Scenario</div>
       <div class="form">
@@ -65,14 +70,11 @@
   </div>
 
   <div class="content" *ngIf="mode === 'json'">
+    <div class="section__title">Input — JSON</div>
     <div class="card">
       <div class="card__title">Input JSON</div>
-      <p class="help">
-        Paste JSON input for the engine. This is still a product demo—no raw logs, just clear outcomes.
-      </p>
-
+      <div class="card__hint">Paste JSON input for the engine. Invalid JSON will show an error and block run.</div>
       <textarea class="textarea textarea--code" rows="18" [(ngModel)]="jsonText"></textarea>
-      <div class="error" *ngIf="jsonError">{{ jsonError }}</div>
     </div>
   </div>
 </div>

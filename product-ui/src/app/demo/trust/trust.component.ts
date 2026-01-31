@@ -41,11 +41,20 @@ export class TrustComponent {
         this.health = res;
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Unable to reach Trust service.';
+      error: (err: unknown) => {
+        this.error = err instanceof Error ? err.message : 'Unable to reach Trust service.';
         this.loading = false;
       },
     });
+  }
+
+  formatTimestamp(ms: number | null | undefined): string {
+    if (ms == null || !Number.isFinite(ms)) return '—';
+    try {
+      return new Date(ms).toISOString();
+    } catch {
+      return String(ms);
+    }
   }
 
   confidenceFrom(results: any): number | null {

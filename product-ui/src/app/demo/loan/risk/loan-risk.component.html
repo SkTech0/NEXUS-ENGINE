@@ -1,17 +1,37 @@
 <div class="page" *ngIf="state$ | async as s">
   <div class="page__header">
     <div>
-      <div class="kicker">Risk & Trust</div>
-      <h1 class="title">AI Risk Analysis & Trust</h1>
-      <p class="subtitle">Risk breakdown, trust indicators, system confidence, and explanations.</p>
+      <div class="kicker">Risk &amp; Trust</div>
+      <h1 class="title">AI Risk Analysis &amp; Trust</h1>
+      <p class="subtitle">Risk breakdown, trust indicators, system confidence. Read-only inspection.</p>
     </div>
-
     <div class="actions">
       <a class="btn btn--ghost" routerLink="/loan/decision">Back to Decision</a>
-      <button class="btn btn--primary" (click)="refresh()">{{ loading ? 'Refreshing…' : 'Refresh' }}</button>
+      <button class="btn btn--primary" (click)="refresh()" [disabled]="loading">{{ loading ? 'Refreshing…' : 'Refresh' }}</button>
     </div>
   </div>
 
+  <!-- Explicit error state -->
+  <div class="error-state" *ngIf="error && !loading">
+    <strong>Trust service error:</strong> {{ error }}
+  </div>
+
+  <!-- Metadata -->
+  <section class="card">
+    <div class="section__title">Metadata</div>
+    <div class="metadata">
+      <div class="metadata__row">
+        <span class="metadata__label">Last refresh</span>
+        <span class="metadata__value">{{ loading ? '…' : (health ? 'Just now' : '—') }}</span>
+      </div>
+      <div class="metadata__row" *ngIf="health?.status">
+        <span class="metadata__label">Service status</span>
+        <span class="metadata__value">{{ health.status }}</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section__title">Trust status &amp; scores</div>
   <div class="grid">
     <section class="card">
       <div class="card__title">Trust status</div>
@@ -59,8 +79,9 @@
     </section>
   </div>
 
+  <div class="section__title">Risk indicators</div>
   <section class="card">
-    <div class="card__title">Risk indicators</div>
+    <div class="card__hint">Derived from confidence, execution stability, and Trust API when available.</div>
     <div class="indicators">
       <div class="indicator" *ngFor="let i of indicatorsFrom(s.results, s.domainConfidence)">
         <div class="indicator__top">

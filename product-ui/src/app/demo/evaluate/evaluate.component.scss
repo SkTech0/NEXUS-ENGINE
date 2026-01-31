@@ -118,6 +118,12 @@
   opacity: 0.75;
 }
 
+.status__pill.pill--partial {
+  border-color: rgba(234, 179, 8, 0.4);
+  background: rgba(234, 179, 8, 0.1);
+  color: #854d0e;
+}
+
 .status__meta {
   display: grid;
   gap: 2px;

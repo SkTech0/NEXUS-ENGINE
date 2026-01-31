@@ -3,9 +3,8 @@
     <div>
       <div class="kicker">Evaluate</div>
       <h1 class="title">Loan Decision in Progress</h1>
-      <p class="subtitle">Step-by-step view of the decision engine.</p>
+      <p class="subtitle">Step-by-step view of the decision engine. Read-only inspection.</p>
     </div>
-
     <div class="actions">
       <a class="btn btn--ghost" routerLink="/loan/apply">New Application</a>
       <a class="btn btn--primary" [class.btn--disabled]="s.overallStatus === 'running'" routerLink="/loan/decision">
@@ -14,92 +13,124 @@
     </div>
   </div>
 
-  <div class="summary summary--applicant" *ngIf="s.application">
-    <div class="summary__applicant">
-      <span class="summary__label">Applicant</span>
-      <span class="summary__value">{{ s.application.fullName }}</span>
-      <span class="summary__meta">Loan: {{ s.application.loanAmount | number }} · {{ s.application.loanTenure }} months</span>
-    </div>
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!hasRun(s)">
+    <div class="empty-state__title">No run in progress</div>
+    <div class="empty-state__body">Submit an application and run evaluation to see step-by-step execution.</div>
+    <a class="btn btn--primary" routerLink="/loan/apply">Go to Apply</a>
   </div>
 
-  <div class="summary">
-    <div class="summary__left">
-      <div class="status">
-        <span
-          class="status__pill"
-          [ngClass]="{
-            'status__pill--running': s.overallStatus === 'running',
-            'status__pill--ok': s.overallStatus === 'completed',
-            'status__pill--bad': s.overallStatus === 'failed',
-            'status__pill--idle': s.overallStatus === 'idle'
-          }"
-        >
-          {{
-            s.overallStatus === 'running'
-              ? 'Running'
-              : s.overallStatus === 'completed'
-                ? 'Completed'
-                : s.overallStatus === 'failed'
-                  ? 'Needs attention'
-                  : 'Ready'
-          }}
-        </span>
-        <div class="status__meta">
-          <div class="status__label">Progress</div>
-          <div class="status__value">{{ progress(s.steps) }}%</div>
+  <ng-container *ngIf="hasRun(s)">
+    <!-- Input: applicant -->
+    <div class="section__title" *ngIf="s.application">Input — applicant</div>
+    <div class="summary summary--applicant" *ngIf="s.application">
+      <div class="summary__applicant">
+        <span class="summary__label">Applicant</span>
+        <span class="summary__value">{{ s.application.fullName }}</span>
+        <span class="summary__meta">Loan: {{ s.application.loanAmount | number }} · {{ s.application.loanTenure }} months</span>
+      </div>
+    </div>
+
+    <!-- Metadata -->
+    <section class="card">
+      <div class="section__title">Metadata</div>
+      <div class="metadata">
+        <div class="metadata__row">
+          <span class="metadata__label">Run ID</span>
+          <span class="metadata__value">{{ s.runId ?? '—' }}</span>
+        </div>
+        <div class="metadata__row">
+          <span class="metadata__label">Started at</span>
+          <span class="metadata__value">{{ formatTimestamp(s.createdAt) }}</span>
         </div>
       </div>
+    </section>
 
-      <div class="bar">
-        <div class="bar__fill" [style.width.%]="progress(s.steps)"></div>
-      </div>
-    </div>
-
-    <div class="summary__right">
-      <a class="link" routerLink="/loan/risk">Risk & Trust</a>
-      <span class="dot"></span>
-      <a class="link" routerLink="/loan/history">History</a>
-    </div>
-  </div>
-
-  <div class="timeline">
-    <div class="step" *ngFor="let st of s.steps">
-      <div
-        class="step__marker"
-        [ngClass]="{
-          'step__marker--ok': st.status === 'success',
-          'step__marker--running': st.status === 'running',
-          'step__marker--bad': st.status === 'error',
-          'step__marker--pending': st.status === 'pending'
-        }"
-      ></div>
-
-      <div class="step__content">
-        <div class="step__top">
-          <div class="step__title">{{ st.label }}</div>
-          <div
-            class="step__badge"
+    <!-- State clarity -->
+    <div class="summary">
+      <div class="summary__left">
+        <div class="status">
+          <span
+            class="status__pill"
             [ngClass]="{
-              'step__badge--ok': st.status === 'success',
-              'step__badge--running': st.status === 'running',
-              'step__badge--bad': st.status === 'error',
-              'step__badge--pending': st.status === 'pending'
+              'status__pill--running': s.overallStatus === 'running',
+              'status__pill--ok': s.overallStatus === 'completed' && !isPartialSuccess(s),
+              'status__pill--bad': s.overallStatus === 'failed',
+              'status__pill--idle': s.overallStatus === 'idle',
+              'pill--partial': isPartialSuccess(s)
             }"
           >
             {{
-              st.status === 'running'
-                ? 'In progress'
-                : st.status === 'success'
-                  ? 'Done'
-                  : st.status === 'error'
-                    ? 'Issue'
-                    : 'Queued'
+              isPartialSuccess(s)
+                ? 'Partial success'
+                : s.overallStatus === 'running'
+                  ? 'Running'
+                  : s.overallStatus === 'completed'
+                    ? 'Completed'
+                    : s.overallStatus === 'failed'
+                      ? 'Failed'
+                      : 'Ready'
             }}
+          </span>
+          <div class="status__meta">
+            <div class="status__label">Progress</div>
+            <div class="status__value">{{ progress(s.steps) }}%</div>
           </div>
         </div>
-        <div class="step__desc">{{ st.description }}</div>
-        <div class="step__error" *ngIf="st.status === 'error' && st.errorMessage">{{ st.errorMessage }}</div>
+        <div class="bar">
+          <div class="bar__fill" [style.width.%]="progress(s.steps)"></div>
+        </div>
+      </div>
+      <div class="summary__right">
+        <a class="link" routerLink="/loan/risk">Risk &amp; Trust</a>
+        <span class="dot"></span>
+        <a class="link" routerLink="/loan/history">History</a>
       </div>
     </div>
-  </div>
+
+    <!-- Processing: step order -->
+    <div class="section__title">Processing — step order</div>
+    <div class="timeline">
+      <div class="step" *ngFor="let st of s.steps; let i = index">
+        <div
+          class="step__marker"
+          [ngClass]="{
+            'step__marker--ok': st.status === 'success',
+            'step__marker--running': st.status === 'running',
+            'step__marker--bad': st.status === 'error',
+            'step__marker--pending': st.status === 'pending'
+          }"
+        ></div>
+        <div class="step__content">
+          <div class="step__top">
+            <div class="step__title">
+              <span class="metadata__value" style="margin-right: 8px;">{{ i + 1 }}.</span>
+              {{ st.label }}
+            </div>
+            <div
+              class="step__badge"
+              [ngClass]="{
+                'step__badge--ok': st.status === 'success',
+                'step__badge--running': st.status === 'running',
+                'step__badge--bad': st.status === 'error',
+                'step__badge--pending': st.status === 'pending'
+              }"
+            >
+              {{
+                st.status === 'running'
+                  ? 'In progress'
+                  : st.status === 'success'
+                    ? 'Done'
+                    : st.status === 'error'
+                      ? 'Failed'
+                      : 'Queued'
+              }}
+            </div>
+          </div>
+          <div class="step__desc">{{ st.description }}</div>
+          <div class="step__error" *ngIf="st.status === 'error' && st.errorMessage">{{ st.errorMessage }}</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </div>

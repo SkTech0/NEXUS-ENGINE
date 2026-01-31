@@ -1,30 +1,50 @@
-<section class="dashboard">
-  <header class="dashboard__header">
-    <h2>Dashboard</h2>
-    <p class="dashboard__subtitle">Nexus Engine overview</p>
-  </header>
+<section class="dashboard page">
+  <div class="page__header">
+    <div>
+      <div class="kicker">Overview</div>
+      <h1 class="title">Dashboard</h1>
+      <p class="subtitle">NEXUS Engine overview. Links to Engine, AI Console, Graph, and Optimization. Read-only.</p>
+    </div>
+  </div>
+
+  <!-- Metadata -->
+  <section class="card">
+    <div class="section__title">Metadata</div>
+    <div class="metadata">
+      <div class="metadata__row">
+        <span class="metadata__label">Purpose</span>
+        <span class="metadata__value">Navigation hub for engine inspection views</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <div class="section__title">Navigation</div>
   <nav class="dashboard__nav">
     <a routerLink="/engine" routerLinkActive="active">Engine Monitor</a>
     <a routerLink="/ai-console" routerLinkActive="active">AI Console</a>
     <a routerLink="/graph" routerLinkActive="active">Graph Viewer</a>
     <a routerLink="/optimization" routerLinkActive="active">Optimization</a>
   </nav>
+
+  <!-- Engine contributions summary -->
+  <div class="section__title">Engine contributions</div>
   <div class="dashboard__cards">
     <div class="card card--engine">
       <h3>Engine</h3>
-      <p>Core engine status and controls</p>
+      <p>Core engine status and execute. Inspect via Engine Monitor.</p>
     </div>
     <div class="card card--intelligence">
       <h3>Intelligence</h3>
-      <p>Reasoning and inference</p>
+      <p>Reasoning and evaluation. Used in decision and loan flows.</p>
     </div>
     <div class="card card--ai">
       <h3>AI</h3>
-      <p>Models and inference</p>
+      <p>Models and inference. Used in decision and loan flows.</p>
     </div>
     <div class="card card--trust">
       <h3>Trust</h3>
-      <p>Verification and scores</p>
+      <p>Health and risk indicators. Inspect via Trust or Loan Risk.</p>
     </div>
   </div>
 </section>

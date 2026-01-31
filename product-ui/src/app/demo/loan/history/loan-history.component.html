@@ -3,25 +3,45 @@
     <div>
       <div class="kicker">History</div>
       <h1 class="title">Previous Loan Decisions</h1>
-      <p class="subtitle">Stored in-memory for this demo session. Replay any run.</p>
+      <p class="subtitle">Loan run history for this session. Stored in-memory. Read-only inspection.</p>
     </div>
-
     <div class="actions">
       <a class="btn btn--ghost" routerLink="/loan/apply">New Application</a>
       <button class="btn btn--danger" (click)="clear()" [disabled]="!records.length">Clear</button>
     </div>
   </div>
 
-  <div class="empty" *ngIf="!records.length">
-    <div class="empty__title">No loan decisions yet</div>
-    <div class="empty__body">Go to Apply, enter applicant details, and click Evaluate Loan.</div>
+  <section class="card" *ngIf="records.length">
+    <div class="section__title">Metadata</div>
+    <div class="metadata">
+      <div class="metadata__row">
+        <span class="metadata__label">Records in session</span>
+        <span class="metadata__value">{{ records.length }}</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="empty-state" *ngIf="!records.length">
+    <div class="empty-state__title">No loan decisions yet</div>
+    <div class="empty-state__body">Go to Apply, enter applicant details, and run evaluation. Completed runs appear here with outcome, confidence, and risk.</div>
     <a class="btn btn--primary" routerLink="/loan/apply">Go to Apply</a>
   </div>
 
+  <div class="section__title" *ngIf="records.length">Runs — chronological (newest first)</div>
   <div class="timeline" *ngIf="records.length">
     <div class="run" *ngFor="let r of records">
       <div class="run__left">
         <div class="run__title">{{ r.applicantName }} · {{ r.loanAmount | number }}</div>
+        <div class="metadata" style="margin-top: 6px;">
+          <div class="metadata__row">
+            <span class="metadata__label">Run ID</span>
+            <span class="metadata__value">{{ r.id }}</span>
+          </div>
+          <div class="metadata__row">
+            <span class="metadata__label">Created at</span>
+            <span class="metadata__value">{{ formatTime(r.createdAt) }}</span>
+          </div>
+        </div>
         <div class="run__meta">
           <span class="pill" [ngClass]="outcomeClass(r.outcome)">{{ r.outcome }}</span>
           <span
@@ -44,7 +64,6 @@
           <span class="risk" *ngIf="r.riskScore != null">Risk: {{ r.riskScore }}</span>
         </div>
       </div>
-
       <div class="run__right">
         <button class="btn btn--primary" (click)="openRecord(r)">Open</button>
       </div>

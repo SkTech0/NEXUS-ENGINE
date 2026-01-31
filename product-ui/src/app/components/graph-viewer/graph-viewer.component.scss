@@ -1,5 +1,41 @@
 .graph-viewer {
   padding: 1.5rem;
+  display: grid;
+  gap: 14px;
+}
+
+.graph-viewer .page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.graph-viewer .kicker {
+  font-size: 12px;
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.graph-viewer .title {
+  margin: 6px 0 4px;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+
+.graph-viewer .subtitle {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.graph-viewer .card {
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  padding: 14px;
 }
 
 .graph-viewer__header {

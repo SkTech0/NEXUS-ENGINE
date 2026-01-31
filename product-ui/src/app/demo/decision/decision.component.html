@@ -3,67 +3,123 @@
     <div>
       <div class="kicker">Decision</div>
       <h1 class="title">Outcome Summary</h1>
-      <p class="subtitle">Human-readable results from the end-to-end flow.</p>
+      <p class="subtitle">Human-readable results from the end-to-end flow. Read-only inspection view.</p>
     </div>
-
     <div class="actions">
       <a class="btn btn--ghost" routerLink="/evaluate">Back to Evaluate</a>
       <a class="btn btn--primary" routerLink="/trust">Trust</a>
     </div>
   </div>
 
-  <div class="top">
-    <div
-      class="pill"
-      [ngClass]="{
-        'pill--ok': s.overallStatus === 'completed',
-        'pill--bad': s.overallStatus === 'failed',
-        'pill--running': s.overallStatus === 'running',
-        'pill--idle': s.overallStatus === 'idle'
-      }"
-    >
-      {{
-        s.overallStatus === 'completed'
-          ? 'Completed'
-          : s.overallStatus === 'failed'
-            ? 'Needs attention'
-            : s.overallStatus === 'running'
-              ? 'Running'
-              : 'Ready'
-      }}
-    </div>
-
-    <div class="confidence" *ngIf="confidenceFrom(s.results) as c">
-      <div class="confidence__label">Confidence</div>
-      <div class="confidence__value">{{ (c * 100) | number: '1.0-0' }}%</div>
-    </div>
+  <!-- Empty state: no run data -->
+  <div class="empty-state" *ngIf="!hasRunData(s)">
+    <div class="empty-state__title">No run data to display</div>
+    <div class="empty-state__body">Start a run from the Playground or open a previous run from History to see decision output, engine contributions, and confidence.</div>
+    <a class="btn btn--primary" routerLink="/playground">Go to Playground</a>
+    <span class="dot" style="margin: 0 8px;"></span>
+    <a class="link" routerLink="/history">View History</a>
   </div>
 
-  <div class="grid">
+  <ng-container *ngIf="hasRunData(s)">
+    <!-- Metadata -->
     <section class="card">
-      <div class="card__title">Decision output</div>
-      <div class="card__hint">From the Engine execution step.</div>
-      <pre class="pre">{{ pretty(s.results.execute) }}</pre>
+      <div class="section__title">Metadata</div>
+      <div class="metadata">
+        <div class="metadata__row">
+          <span class="metadata__label">Run ID</span>
+          <span class="metadata__value">{{ s.runId ?? '—' }}</span>
+        </div>
+        <div class="metadata__row">
+          <span class="metadata__label">Created at</span>
+          <span class="metadata__value">{{ formatTimestamp(s.createdAt) }}</span>
+        </div>
+        <div class="metadata__row" *ngIf="stepOrder(s).length">
+          <span class="metadata__label">Step order</span>
+          <span class="metadata__value">{{ stepOrder(s).join(' → ') }}</span>
+        </div>
+      </div>
     </section>
 
-    <section class="card">
-      <div class="card__title">AI output</div>
-      <div class="card__hint">From the inference step.</div>
-      <pre class="pre">{{ pretty(s.results.infer) }}</pre>
+    <!-- State clarity -->
+    <div class="top">
+      <div
+        class="pill"
+        [ngClass]="{
+          'pill--ok': s.overallStatus === 'completed' && !isPartialSuccess(s),
+          'pill--bad': s.overallStatus === 'failed',
+          'pill--running': s.overallStatus === 'running',
+          'pill--idle': s.overallStatus === 'idle',
+          'pill--partial': isPartialSuccess(s)
+        }"
+      >
+        {{
+          isPartialSuccess(s)
+            ? 'Partial success'
+            : s.overallStatus === 'completed'
+              ? 'Completed'
+              : s.overallStatus === 'failed'
+                ? 'Failed'
+                : s.overallStatus === 'running'
+                  ? 'Running'
+                  : 'Ready'
+        }}
+      </div>
+      <div class="confidence" *ngIf="confidenceFrom(s.results) as c">
+        <div class="confidence__label">Confidence</div>
+        <div class="confidence__value">{{ (c * 100) | number: '1.0-0' }}%</div>
+      </div>
+    </div>
+
+    <!-- Explainability: confidence derivation -->
+    <section class="card" *ngIf="confidenceFrom(s.results) != null">
+      <div class="section__title">Confidence</div>
+      <div class="card__hint">{{ confidenceSource(s.results) }}</div>
     </section>
 
+    <!-- Input -->
     <section class="card">
-      <div class="card__title">Optimization result</div>
-      <div class="card__hint">From the optimization step.</div>
-      <pre class="pre">{{ pretty(s.results.optimize) }}</pre>
+      <div class="section__title">Input</div>
+      <div class="card__hint">Payload sent to the decision flow.</div>
+      <pre class="pre">{{ pretty(s.input) }}</pre>
     </section>
 
+    <!-- Processing: step outcomes (summary) -->
     <section class="card">
-      <div class="card__title">Evaluation</div>
-      <div class="card__hint">Quality + confidence scoring.</div>
-      <pre class="pre">{{ pretty(s.results.evaluate) }}</pre>
+      <div class="section__title">Processing</div>
+      <div class="card__hint">Step status summary. See Evaluate for full timeline.</div>
+      <div class="metadata">
+        <div class="metadata__row" *ngFor="let st of s.steps">
+          <span class="metadata__label">{{ st.label }}</span>
+          <span class="metadata__value">{{ st.status }}</span>
+        </div>
+      </div>
     </section>
-  </div>
+
+    <!-- Engine contributions / Outputs -->
+    <div class="section__title">Engine contributions &amp; outputs</div>
+    <div class="grid">
+      <section class="card">
+        <div class="card__title">Decision output</div>
+        <div class="card__hint">Engine execution step.</div>
+        <pre class="pre">{{ pretty(s.results.execute) }}</pre>
+      </section>
+      <section class="card">
+        <div class="card__title">AI output</div>
+        <div class="card__hint">Inference step.</div>
+        <pre class="pre">{{ pretty(s.results.infer) }}</pre>
+      </section>
+      <section class="card">
+        <div class="card__title">Optimization result</div>
+        <div class="card__hint">Optimization step.</div>
+        <pre class="pre">{{ pretty(s.results.optimize) }}</pre>
+      </section>
+      <section class="card">
+        <div class="card__title">Evaluation</div>
+        <div class="card__hint">Intelligence evaluation: quality and confidence.</div>
+        <pre class="pre">{{ pretty(s.results.evaluate) }}</pre>
+      </section>
+    </div>
+  </ng-container>
 
   <div class="footer">
     <a class="link" routerLink="/history">See run history</a>
@@ -71,4 +127,3 @@
     <a class="link" routerLink="/playground">Start a new run</a>
   </div>
 </div>
-

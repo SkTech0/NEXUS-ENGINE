@@ -2,26 +2,48 @@
   <div class="page__header">
     <div>
       <div class="kicker">Trust</div>
-      <h1 class="title">Health & Risk Signals</h1>
-      <p class="subtitle">A product-facing view of system readiness and confidence.</p>
+      <h1 class="title">Health &amp; Risk Signals</h1>
+      <p class="subtitle">System readiness, confidence, and risk indicators. Read-only inspection.</p>
     </div>
-
     <div class="actions">
       <a class="btn btn--ghost" routerLink="/decision">Back to Decision</a>
-      <button class="btn btn--primary" (click)="refresh()">{{ loading ? 'Refreshing…' : 'Refresh' }}</button>
+      <button class="btn btn--primary" (click)="refresh()" [disabled]="loading">{{ loading ? 'Refreshing…' : 'Refresh' }}</button>
     </div>
   </div>
 
+  <!-- Explicit error state -->
+  <div class="error-state" *ngIf="error && !loading">
+    <strong>Trust service error:</strong> {{ error }}
+  </div>
+
+  <!-- Metadata -->
+  <section class="card">
+    <div class="section__title">Metadata</div>
+    <div class="metadata">
+      <div class="metadata__row">
+        <span class="metadata__label">Last refresh</span>
+        <span class="metadata__value">{{ loading ? '…' : (health ? 'Just now' : '—') }}</span>
+      </div>
+      <div class="metadata__row" *ngIf="health?.status">
+        <span class="metadata__label">Service status</span>
+        <span class="metadata__value">{{ health.status }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust status -->
+  <div class="section__title">Trust status</div>
   <div class="grid">
     <section class="card">
-      <div class="card__title">Trust status</div>
+      <div class="card__title">Trust service health</div>
       <div class="pillrow">
         <div
           class="pill"
           [ngClass]="{
             'pill--ok': (health?.healthy ?? (health?.status === 'ok')) === true,
             'pill--bad': !!error,
-            'pill--idle': (health?.healthy ?? (health?.status === 'ok')) !== true && !error
+            'pill--idle': (health?.healthy ?? (health?.status === 'ok')) !== true && !error,
+            'pill--degraded': health && (health?.healthy ?? (health?.status === 'ok')) !== true && !error
           }"
         >
           {{
@@ -34,25 +56,26 @@
                   : 'Unknown'
           }}
         </div>
-        <div class="meta" *ngIf="health?.message">{{ health?.message }}</div>
-        <div class="meta" *ngIf="error">{{ error }}</div>
+        <div class="card__hint" *ngIf="health?.message">{{ health?.message }}</div>
       </div>
     </section>
 
     <section class="card">
-      <div class="card__title">Confidence score</div>
+      <div class="card__title">Confidence</div>
       <div class="score" *ngIf="confidenceFrom(s.results) as c; else noScore">
         <div class="score__value">{{ (c * 100) | number: '1.0-0' }}%</div>
-        <div class="score__label">Combined confidence signal</div>
+        <div class="score__label">Combined confidence from run or Trust service</div>
       </div>
       <ng-template #noScore>
-        <div class="meta">No confidence score provided by the services yet.</div>
+        <div class="empty-state__body" style="margin: 0;">No confidence score from services or current run.</div>
       </ng-template>
     </section>
   </div>
 
+  <!-- Risk indicators -->
+  <div class="section__title">Risk indicators</div>
   <section class="card">
-    <div class="card__title">Risk indicators</div>
+    <div class="card__hint">Derived from confidence, execution stability, and Trust API when available.</div>
     <div class="indicators">
       <div class="indicator" *ngFor="let i of indicatorsFrom(s.results)">
         <div class="indicator__top">
