@@ -66,11 +66,11 @@ Enterprise-grade implementation of three critical components (branch: `feat/trus
 ## Product UI — Verify Token (demo)
 
 The Trust page (`/trust`) includes a **Verify JWT** section:
-- **Generate sample**: Creates a HS256 JWT signed with `dev-demo-secret` (1h expiry, sub: demo-user)
+- **Generate sample**: Fetches a demo JWT from `GET /api/Trust/demo-token` (signed with TRUST_JWT_SECRET). Works in prod when secret is set. Falls back to client-side (`dev-demo-secret`) if API unavailable.
 - **Verify**: Calls `POST /api/Trust/verify` and shows valid/invalid + message
 
-**For local demo**: Set `TRUST_JWT_SECRET=dev-demo-secret` in engine-trust (or engine-api when using in-process Trust).  
-**Never use dev-demo-secret in production.**
+**Production**: Generate sample uses the backend, so it works with your configured `TRUST_JWT_SECRET`.  
+**Local fallback**: If demo-token API fails, client generates with `dev-demo-secret` — set `TRUST_JWT_SECRET=dev-demo-secret` to verify.
 
 ---
 

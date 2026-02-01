@@ -35,4 +35,13 @@ public class TrustController : ControllerBase
 
     [HttpGet("health")]
     public IActionResult Health() => Ok(new { status = "healthy", service = "trust" });
+
+    [HttpGet("demo-token")]
+    public IActionResult DemoToken()
+    {
+        var token = _trustService.GetDemoToken();
+        if (token == null)
+            return Ok(new { token = (string?)null, message = "TRUST_JWT_SECRET not configured" });
+        return Ok(new { token });
+    }
 }

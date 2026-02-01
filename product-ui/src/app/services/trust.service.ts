@@ -32,4 +32,9 @@ export class TrustService {
   getScore(entityId: string): Observable<TrustScoreResponse> {
     return this.http.get<TrustScoreResponse>(`${this.baseUrl}/Trust/score/${entityId}`);
   }
+
+  /** Fetch demo token from backend (signed with TRUST_JWT_SECRET). Falls back to client-side if unavailable. */
+  getDemoToken(): Observable<{ token: string | null; message?: string }> {
+    return this.http.get<{ token: string | null; message?: string }>(`${this.baseUrl}/Trust/demo-token`);
+  }
 }

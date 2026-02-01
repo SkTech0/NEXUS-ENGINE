@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using EngineApi.DTOs;
@@ -42,6 +43,26 @@ public class TrustService : ITrustService
         if (string.IsNullOrWhiteSpace(entityId))
             throw new ArgumentException("entityId is required", nameof(entityId));
         return new TrustScoreResponseDto(EntityId: entityId, Score: 0.0, Source: null);
+    }
+
+    public string? GetDemoToken()
+    {
+        var secret = _configuration["Trust:JwtSecret"] ?? _configuration["TRUST_JWT_SECRET"] ?? "";
+        if (string.IsNullOrWhiteSpace(secret))
+            return null;
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var now = DateTime.UtcNow;
+        var token = new JwtSecurityToken(
+            claims: new[]
+            {
+                new Claim("sub", "demo-user"),
+                new Claim("aud", "nexus-engine"),
+                new Claim("demo", "true"),
+            },
+            expires: now.AddHours(1),
+            signingCredentials: creds);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private static string? ExtractToken(TrustVerifyRequestDto request)

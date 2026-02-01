@@ -1,10 +1,20 @@
-"""HTTP layer: /api/Trust/verify, /api/Trust/health, /health."""
+"""HTTP layer: /api/Trust/verify, /api/Trust/health, /api/Trust/demo-token, /health."""
 from typing import Any
 from fastapi import APIRouter
 from .health import get_health
 from . import service as svc
+from .verification.jwt_verifier import generate_demo_jwt
 
 api = APIRouter(prefix="/api", tags=["Trust"])
+
+
+@api.get("/Trust/demo-token")
+def trust_demo_token() -> dict[str, Any]:
+    """Generate a demo JWT signed with TRUST_JWT_SECRET. Works in prod when secret is set."""
+    token = generate_demo_jwt()
+    if token is None:
+        return {"token": None, "message": "TRUST_JWT_SECRET not configured"}
+    return {"token": token}
 
 
 @api.post("/Trust/verify")

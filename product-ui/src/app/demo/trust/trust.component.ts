@@ -56,14 +56,29 @@ export class TrustComponent {
     });
   }
 
-  async generateSampleJwt(): Promise<void> {
-    try {
-      const token = await generateDemoJwt();
-      this.tokenInput = token;
-      this.verifyResult = null;
-    } catch (e) {
-      this.verifyResult = { valid: false, message: 'Failed to generate demo JWT' };
-    }
+  generateSampleJwt(): void {
+    this.verifyResult = null;
+    // Try API first (uses TRUST_JWT_SECRET — works in prod). Fallback to client-side (dev-demo-secret).
+    this.trustService.getDemoToken().subscribe({
+      next: (res) => {
+        if (res.token) {
+          this.tokenInput = res.token;
+          return;
+        }
+        generateDemoJwt().then((token) => {
+          this.tokenInput = token;
+        }).catch(() => {
+          this.verifyResult = { valid: false, message: 'Failed to generate demo JWT' };
+        });
+      },
+      error: () => {
+        generateDemoJwt().then((token) => {
+          this.tokenInput = token;
+        }).catch(() => {
+          this.verifyResult = { valid: false, message: 'Failed to generate demo JWT' };
+        });
+      },
+    });
   }
 
   verifyToken(): void {

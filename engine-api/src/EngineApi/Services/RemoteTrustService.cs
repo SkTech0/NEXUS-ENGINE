@@ -85,4 +85,24 @@ public class RemoteTrustService : ITrustService
             return new TrustScoreResponseDto(entityId, 0.0, null);
         }
     }
+
+    public string? GetDemoToken()
+    {
+        try
+        {
+            var client = _factory.CreateClient(ClientName);
+            using var response = client.GetAsync("api/Trust/demo-token").GetAwaiter().GetResult();
+            response.EnsureSuccessStatusCode();
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+            if (root.TryGetProperty("token", out var t) && t.ValueKind == System.Text.Json.JsonValueKind.String)
+                return t.GetString();
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }

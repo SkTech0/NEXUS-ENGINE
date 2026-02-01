@@ -6,4 +6,5 @@ public interface ITrustService
 {
     TrustVerifyResponseDto Verify(TrustVerifyRequestDto request);
     TrustScoreResponseDto GetScore(string entityId);
+    string? GetDemoToken();
 }

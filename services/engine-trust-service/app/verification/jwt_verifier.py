@@ -72,3 +72,30 @@ def verify_jwt(token: str) -> tuple[bool, str | None, dict[str, Any] | None]:
     except Exception as e:
         _logger.warning("JWT verification error: %s", e)
         return False, str(e), None
+
+
+def generate_demo_jwt() -> str | None:
+    """
+    Generate a demo JWT signed with TRUST_JWT_SECRET. Returns None if secret not configured.
+    Used by product-ui Verify Token so generated tokens validate in prod.
+    """
+    if not _SECRET:
+        return None
+    try:
+        import jwt
+    except ImportError:
+        return None
+    import time
+    now = int(time.time())
+    payload = {
+        "sub": "demo-user",
+        "aud": "nexus-engine",
+        "iat": now,
+        "exp": now + 3600,
+        "demo": True,
+    }
+    return jwt.encode(
+        payload,
+        _SECRET,
+        algorithm="HS256",
+    )
