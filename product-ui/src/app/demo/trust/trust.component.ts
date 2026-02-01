@@ -111,19 +111,23 @@ export class TrustComponent {
       });
   }
 
-  /** Hint when Invalid signature + token was from fallback */
-  get invalidSignatureHint(): string | null {
-    if (
-      !this.verifyResult ||
-      this.verifyResult.valid ||
-      !this.verifyResult.message?.toLowerCase().includes('invalid signature')
-    ) {
-      return null;
+  /** Hint when verify fails with common errors */
+  get verifyErrorHint(): string | null {
+    if (!this.verifyResult || this.verifyResult.valid) return null;
+    const msg = this.verifyResult.message?.toLowerCase() ?? '';
+    if (msg.includes('invalid signature')) {
+      if (this.tokenFromFallback) {
+        return 'Token was generated in the browser (dev-demo-secret). Set TRUST_JWT_SECRET=dev-demo-secret on engine-trust to verify, or ensure the demo-token API works.';
+      }
+      return 'Ensure engine-trust has TRUST_JWT_SECRET set and matches the signing secret.';
     }
-    if (this.tokenFromFallback) {
-      return 'Token was generated in the browser (dev-demo-secret). Set TRUST_JWT_SECRET=dev-demo-secret on engine-trust to verify, or ensure the demo-token API works (redeploy engine-trust with TRUST_JWT_SECRET).';
+    if (msg.includes('invalid audience')) {
+      return 'Set TRUST_JWT_AUDIENCE=nexus-engine on engine-trust (or leave it unset). The demo token uses audience "nexus-engine".';
     }
-    return 'Ensure engine-trust has TRUST_JWT_SECRET set and matches the signing secret.';
+    if (msg.includes('invalid issuer')) {
+      return 'Set TRUST_JWT_ISSUER on engine-trust to match the token, or leave it unset for demo tokens.';
+    }
+    return null;
   }
 
   formatTimestamp(ms: number | null | undefined): string {

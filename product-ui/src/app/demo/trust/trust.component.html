@@ -112,7 +112,7 @@
     <div *ngIf="verifyResult" class="verify-token__result" [ngClass]="verifyResult.valid ? 'verify-token__result--valid' : 'verify-token__result--invalid'">
       <strong>{{ verifyResult.valid ? 'Valid' : 'Invalid' }}</strong>
       <span *ngIf="verifyResult.message">{{ verifyResult.message }}</span>
-      <p *ngIf="invalidSignatureHint" class="verify-token__hint">{{ invalidSignatureHint }}</p>
+      <p *ngIf="verifyErrorHint" class="verify-token__hint">{{ verifyErrorHint }}</p>
     </div>
   </section>
 

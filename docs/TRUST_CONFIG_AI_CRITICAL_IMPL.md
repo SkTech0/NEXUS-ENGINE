@@ -81,8 +81,8 @@ The Trust page (`/trust`) includes a **Verify JWT** section:
 | TRUST_JWT_SECRET | engine-trust | JWT signing secret (HS256). Use `dev-demo-secret` for product-ui demo. |
 | TRUST_JWT_STRICT | engine-trust | Require secret (reject unverified) |
 | TRUST_JWT_ALGORITHMS | engine-trust | Comma-separated (e.g. HS256,RS256) |
-| TRUST_JWT_ISSUER | engine-trust | Expected issuer |
-| TRUST_JWT_AUDIENCE | engine-trust | Expected audience |
+| TRUST_JWT_ISSUER | engine-trust | Expected issuer (optional) |
+| TRUST_JWT_AUDIENCE | engine-trust | Expected audience. Use `nexus-engine` for demo token. Leave unset to skip audience check. |
 | Trust:JwtSecret | engine-api | Same for in-process stub |
 
 ---
