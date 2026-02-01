@@ -204,6 +204,20 @@
   }
 }
 
+.verify-token__fallback-warn {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: rgba(217, 119, 6, 0.1);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  color: #92400e;
+
+  code {
+    font-size: 11px;
+  }
+}
+
 .verify-token__controls {
   display: grid;
   gap: 10px;
@@ -232,6 +246,12 @@
   padding: 10px 12px;
   border-radius: 8px;
   font-size: 13px;
+
+  .verify-token__hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    opacity: 0.9;
+  }
 
   &--valid {
     border: 1px solid rgba(22, 163, 74, 0.35);

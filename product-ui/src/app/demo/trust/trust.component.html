@@ -91,12 +91,15 @@
       Paste a JWT or generate a demo token. Generate uses the backend (signed with TRUST_JWT_SECRET) so it works in prod.
       If the API is unavailable, falls back to client-side (requires <code>TRUST_JWT_SECRET=dev-demo-secret</code>).
     </div>
+    <div *ngIf="tokenFromFallback && tokenInput" class="verify-token__fallback-warn">
+      Using local demo token. It will only verify if <code>TRUST_JWT_SECRET=dev-demo-secret</code> on engine-trust.
+    </div>
     <div class="verify-token__controls">
       <textarea
         class="verify-token__input"
         placeholder="Paste JWT or click Generate sample"
         [value]="tokenInput"
-        (input)="tokenInput = $any($event.target).value"
+        (input)="tokenInput = $any($event.target).value; tokenFromFallback = false"
         rows="3"
       ></textarea>
       <div class="verify-token__actions">
@@ -109,6 +112,7 @@
     <div *ngIf="verifyResult" class="verify-token__result" [ngClass]="verifyResult.valid ? 'verify-token__result--valid' : 'verify-token__result--invalid'">
       <strong>{{ verifyResult.valid ? 'Valid' : 'Invalid' }}</strong>
       <span *ngIf="verifyResult.message">{{ verifyResult.message }}</span>
+      <p *ngIf="invalidSignatureHint" class="verify-token__hint">{{ invalidSignatureHint }}</p>
     </div>
   </section>
 

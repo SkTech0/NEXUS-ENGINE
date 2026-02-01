@@ -89,13 +89,12 @@ def generate_demo_jwt() -> str | None:
     now = int(time.time())
     payload = {
         "sub": "demo-user",
-        "aud": "nexus-engine",
+        "aud": _AUDIENCE or "nexus-engine",
         "iat": now,
         "exp": now + 3600,
         "demo": True,
     }
-    return jwt.encode(
-        payload,
-        _SECRET,
-        algorithm="HS256",
-    )
+    if _ISSUER:
+        payload["iss"] = _ISSUER
+    encoded = jwt.encode(payload, _SECRET, algorithm="HS256")
+    return encoded if isinstance(encoded, str) else encoded.decode("utf-8")

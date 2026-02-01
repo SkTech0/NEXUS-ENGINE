@@ -36,6 +36,8 @@ export class TrustComponent {
   tokenInput = '';
   verifyLoading = false;
   verifyResult: TrustVerifyResponse | null = null;
+  /** True when token came from client-side fallback (dev-demo-secret), not backend */
+  tokenFromFallback = false;
 
   ngOnInit(): void {
     this.refresh();
@@ -58,27 +60,30 @@ export class TrustComponent {
 
   generateSampleJwt(): void {
     this.verifyResult = null;
+    this.tokenFromFallback = false;
     // Try API first (uses TRUST_JWT_SECRET — works in prod). Fallback to client-side (dev-demo-secret).
     this.trustService.getDemoToken().subscribe({
       next: (res) => {
         if (res.token) {
           this.tokenInput = res.token;
+          this.tokenFromFallback = false;
           return;
         }
-        generateDemoJwt().then((token) => {
-          this.tokenInput = token;
-        }).catch(() => {
-          this.verifyResult = { valid: false, message: 'Failed to generate demo JWT' };
-        });
+        this.useFallbackToken();
       },
-      error: () => {
-        generateDemoJwt().then((token) => {
-          this.tokenInput = token;
-        }).catch(() => {
-          this.verifyResult = { valid: false, message: 'Failed to generate demo JWT' };
-        });
-      },
+      error: () => this.useFallbackToken(),
     });
+  }
+
+  private useFallbackToken(): void {
+    this.tokenFromFallback = true;
+    generateDemoJwt()
+      .then((token) => {
+        this.tokenInput = token;
+      })
+      .catch(() => {
+        this.verifyResult = { valid: false, message: 'Failed to generate demo JWT' };
+      });
   }
 
   verifyToken(): void {
@@ -104,6 +109,21 @@ export class TrustComponent {
           this.verifyLoading = false;
         },
       });
+  }
+
+  /** Hint when Invalid signature + token was from fallback */
+  get invalidSignatureHint(): string | null {
+    if (
+      !this.verifyResult ||
+      this.verifyResult.valid ||
+      !this.verifyResult.message?.toLowerCase().includes('invalid signature')
+    ) {
+      return null;
+    }
+    if (this.tokenFromFallback) {
+      return 'Token was generated in the browser (dev-demo-secret). Set TRUST_JWT_SECRET=dev-demo-secret on engine-trust to verify, or ensure the demo-token API works (redeploy engine-trust with TRUST_JWT_SECRET).';
+    }
+    return 'Ensure engine-trust has TRUST_JWT_SECRET set and matches the signing secret.';
   }
 
   formatTimestamp(ms: number | null | undefined): string {
