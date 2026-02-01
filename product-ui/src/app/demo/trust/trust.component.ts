@@ -3,6 +3,8 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EngineService, TrustHealthResponse } from '../services/engine.service';
 import { StateService } from '../services/state.service';
+import { TrustService, TrustVerifyResponse } from '../../services/trust.service';
+import { generateDemoJwt } from '../../services/jwt-demo.util';
 
 type RiskLevel = 'low' | 'medium' | 'high';
 
@@ -22,12 +24,18 @@ interface RiskIndicatorView {
 export class TrustComponent {
   private readonly engine = inject(EngineService);
   private readonly state = inject(StateService);
+  private readonly trustService = inject(TrustService);
 
   readonly state$ = this.state.state$;
 
   loading = false;
   error: string | null = null;
   health: TrustHealthResponse | null = null;
+
+  /** JWT Verify section */
+  tokenInput = '';
+  verifyLoading = false;
+  verifyResult: TrustVerifyResponse | null = null;
 
   ngOnInit(): void {
     this.refresh();
@@ -46,6 +54,41 @@ export class TrustComponent {
         this.loading = false;
       },
     });
+  }
+
+  async generateSampleJwt(): Promise<void> {
+    try {
+      const token = await generateDemoJwt();
+      this.tokenInput = token;
+      this.verifyResult = null;
+    } catch (e) {
+      this.verifyResult = { valid: false, message: 'Failed to generate demo JWT' };
+    }
+  }
+
+  verifyToken(): void {
+    const token = this.tokenInput?.trim();
+    if (!token) {
+      this.verifyResult = { valid: false, message: 'Paste or generate a token first' };
+      return;
+    }
+    this.verifyLoading = true;
+    this.verifyResult = null;
+    this.trustService
+      .verify({ payload: { token } })
+      .subscribe({
+        next: (res) => {
+          this.verifyResult = res;
+          this.verifyLoading = false;
+        },
+        error: (err: unknown) => {
+          this.verifyResult = {
+            valid: false,
+            message: err instanceof Error ? err.message : 'Request failed',
+          };
+          this.verifyLoading = false;
+        },
+      });
   }
 
   formatTimestamp(ms: number | null | undefined): string {

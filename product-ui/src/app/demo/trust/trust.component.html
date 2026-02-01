@@ -83,6 +83,35 @@
     </section>
   </div>
 
+  <!-- JWT Verify (demo) -->
+  <div class="section__title">Verify JWT</div>
+  <section class="card verify-token">
+    <div class="card__title">Token verification</div>
+    <div class="card__hint">
+      Paste a JWT or generate a demo token. For demo, set <code>TRUST_JWT_SECRET=dev-demo-secret</code> in engine-trust.
+      Local/dev only — never use in production.
+    </div>
+    <div class="verify-token__controls">
+      <textarea
+        class="verify-token__input"
+        placeholder="Paste JWT or click Generate sample"
+        [value]="tokenInput"
+        (input)="tokenInput = $any($event.target).value"
+        rows="3"
+      ></textarea>
+      <div class="verify-token__actions">
+        <button class="btn btn--ghost" (click)="generateSampleJwt()" type="button">Generate sample</button>
+        <button class="btn btn--primary" (click)="verifyToken()" [disabled]="verifyLoading" type="button">
+          {{ verifyLoading ? 'Verifying…' : 'Verify' }}
+        </button>
+      </div>
+    </div>
+    <div *ngIf="verifyResult" class="verify-token__result" [ngClass]="verifyResult.valid ? 'verify-token__result--valid' : 'verify-token__result--invalid'">
+      <strong>{{ verifyResult.valid ? 'Valid' : 'Invalid' }}</strong>
+      <span *ngIf="verifyResult.message">{{ verifyResult.message }}</span>
+    </div>
+  </section>
+
   <!-- Risk indicators -->
   <div class="section__title">Risk indicators</div>
   <section class="card">
