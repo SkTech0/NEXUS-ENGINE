@@ -22,3 +22,25 @@ def infer(model_id: str, inputs: dict[str, Any]) -> dict[str, Any]:
 
 def list_models() -> dict[str, Any]:
     return {"modelIds": ["default", "risk", "sentiment"]}
+
+
+def submit_training(config: dict[str, Any]) -> dict[str, Any]:
+    """Submit training job. Returns jobId. Runs training in background thread."""
+    from .training import get_job_queue
+    from .training.runner import run_training_job
+    import threading
+
+    queue = get_job_queue()
+    job_id = queue.submit(config=config)
+    thread = threading.Thread(target=run_training_job, args=(job_id, config))
+    thread.daemon = True
+    thread.start()
+    return {"status": "accepted", "jobId": job_id, "message": "Training started. Poll /train/{jobId}/status for progress."}
+
+
+def get_training_status(job_id: str) -> dict[str, Any]:
+    """Get training job status."""
+    from .training import get_job_queue
+
+    queue = get_job_queue()
+    return queue.get_status(job_id)

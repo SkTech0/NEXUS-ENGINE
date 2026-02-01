@@ -21,8 +21,17 @@ def ai_infer(body: dict[str, Any]) -> dict[str, Any]:
 
 @api.post("/train")
 def ai_train(body: dict[str, Any]) -> dict[str, Any]:
-    """Training endpoint; stub for service boundary."""
-    return {"status": "accepted", "jobId": body.get("jobId") or "stub"}
+    """
+    Submit training job. Returns jobId for status polling.
+    Payload: { config?: {...}, modelType?: "risk" }
+    """
+    return svc.submit_training(body or {})
+
+
+@api.get("/train/{job_id}/status")
+def ai_train_status(job_id: str) -> dict[str, Any]:
+    """Get training job status. Returns status, progress, resultPath, error."""
+    return svc.get_training_status(job_id)
 
 
 @api.get("/models")

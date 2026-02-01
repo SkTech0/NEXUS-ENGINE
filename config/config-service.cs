@@ -1,23 +1,20 @@
-// Nexus Engine - Config Service (scaffolding, additive only)
+// Nexus Engine - Config Service
 //
 // Goals:
 // - Centralized config resolution for .NET services.
 // - Precedence model: defaults → env pack → secrets → runtime.
-// - Provide a pluggable secrets resolver abstraction supporting:
-//     - HashiCorp Vault pattern
-//     - Azure Key Vault pattern
-//     - AWS Secrets Manager pattern
-//
-// Important:
-// - This file is NOT wired into the existing runtime.
-// - No secrets are embedded; only keys/paths/refs.
+// - YAML parsing via YamlDotNet.
+// - Provide a pluggable secrets resolver abstraction.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace NexusEngine.Config
 {
@@ -71,14 +68,11 @@ namespace NexusEngine.Config
 
             // 2) env pack documents
             bundle.Appsettings = ReadJson(Path.Combine(envDir, "appsettings.json"));
-
-            // YAML parsing requires a YAML library (e.g., YamlDotNet). This scaffold intentionally
-            // avoids adding dependencies. Implement these when wiring into a runtime.
-            bundle.Engine = ReadYamlStub(Path.Combine(envDir, "engine-config.yaml"));
-            bundle.Ai = ReadYamlStub(Path.Combine(envDir, "ai-config.yaml"));
-            bundle.Observability = ReadYamlStub(Path.Combine(envDir, "observability.yaml"));
-            bundle.Security = ReadYamlStub(Path.Combine(envDir, "security.yaml"));
-            bundle.Infra = ReadYamlStub(Path.Combine(envDir, "infra.yaml"));
+            bundle.Engine = ReadYaml(Path.Combine(envDir, "engine-config.yaml"));
+            bundle.Ai = ReadYaml(Path.Combine(envDir, "ai-config.yaml"));
+            bundle.Observability = ReadYaml(Path.Combine(envDir, "observability.yaml"));
+            bundle.Security = ReadYaml(Path.Combine(envDir, "security.yaml"));
+            bundle.Infra = ReadYaml(Path.Combine(envDir, "infra.yaml"));
 
             // 3) secrets injection (pattern scaffold)
             if (secretsResolver != null)
@@ -115,15 +109,48 @@ namespace NexusEngine.Config
             return root ?? new Dictionary<string, object?>();
         }
 
-        private static Dictionary<string, object?> ReadYamlStub(string filePath)
+        private static Dictionary<string, object?> ReadYaml(string filePath)
         {
-            // TODO: Implement with YamlDotNet (or org standard) when wiring in.
-            // This is intentionally a stub so it cannot accidentally impact runtime behavior.
-            return new Dictionary<string, object?>
+            if (!File.Exists(filePath))
+                return new Dictionary<string, object?> { ["__path__"] = filePath, ["__missing__"] = true };
+
+            try
             {
-                ["__stub__"] = true,
-                ["__path__"] = filePath
-            };
+                var yaml = File.ReadAllText(filePath);
+                if (string.IsNullOrWhiteSpace(yaml))
+                    return new Dictionary<string, object?>();
+                var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .Build();
+                var obj = deserializer.Deserialize<Dictionary<object, object>>(yaml);
+                return ToDictionaryFromYaml(obj);
+            }
+            catch
+            {
+                return new Dictionary<string, object?> { ["__path__"] = filePath, ["__error__"] = "parse_failed" };
+            }
+        }
+
+        private static Dictionary<string, object?> ToDictionaryFromYaml(Dictionary<object, object>? yamlDict)
+        {
+            if (yamlDict == null) return new Dictionary<string, object?>();
+            var result = new Dictionary<string, object?>(StringComparer.Ordinal);
+            foreach (var kv in yamlDict)
+                result[kv.Key?.ToString() ?? ""] = ToDictionaryValue(kv.Value);
+            return result;
+        }
+
+        private static object? ToDictionaryValue(object? v)
+        {
+            if (v == null) return null;
+            if (v is Dictionary<object, object> d) return ToDictionaryFromYaml(d);
+            if (v is System.Collections.IList list)
+            {
+                var arr = new List<object?>();
+                foreach (var item in list) arr.Add(ToDictionaryValue(item));
+                return arr;
+            }
+            return v;
         }
 
         private static object? ToObject(JsonElement el)

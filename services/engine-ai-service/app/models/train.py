@@ -59,5 +59,10 @@ def train_and_save(output_dir: Path | None = None) -> Path:
 
 
 if __name__ == "__main__":
-    path = train_and_save()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=str, default=None, help="Output directory for model")
+    args = parser.parse_args()
+    output_dir = Path(args.output_dir) if args.output_dir else None
+    path = train_and_save(output_dir=output_dir)
     print(f"Model saved to {path}")

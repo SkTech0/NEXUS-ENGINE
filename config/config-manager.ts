@@ -13,6 +13,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as yaml from "js-yaml";
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
@@ -49,14 +50,18 @@ function readJson(filePath: string): Record<string, unknown> {
 }
 
 function readYaml(filePath: string): Record<string, unknown> {
-  /**
-   * Dependency note:
-   * - YAML parsing typically uses `js-yaml` or organization-standard parser.
-   * - This scaffold intentionally avoids adding new dependencies.
-   */
-  throw new Error(
-    `YAML parsing not implemented in scaffold. Install a YAML parser and implement readYaml(). Missing: ${filePath}`,
-  );
+  try {
+    if (!fs.existsSync(filePath)) return { __path: filePath, __missing: true };
+    const content = fs.readFileSync(filePath, "utf-8");
+    if (!content.trim()) return {};
+    const parsed = yaml.load(content);
+    if (parsed == null || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    return parsed as Record<string, unknown>;
+  } catch (err: unknown) {
+    if (fs.existsSync(filePath))
+      throw new Error(`YAML parse error at ${filePath}: ${err instanceof Error ? err.message : String(err)}`);
+    return { __path: filePath, __missing: true };
+  }
 }
 
 function envvarExpand(value: unknown): unknown {
