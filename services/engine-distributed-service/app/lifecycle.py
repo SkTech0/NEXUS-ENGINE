@@ -13,6 +13,22 @@ def on_shutdown(fn: Callable[[], None]) -> None:
     _shutdown_hooks.append(fn)
 
 
+def _startup_distributed_engine() -> None:
+    import logging
+    try:
+        from app.domain_facade import init_distributed_engine
+        init_distributed_engine()
+    except Exception as e:
+        logging.getLogger("engine-distributed-service").warning(
+            "distributed engine init failed; health will work, replicate/coordinate will use fallback. %s",
+            e,
+            exc_info=True,
+        )
+
+
+on_startup(_startup_distributed_engine)
+
+
 async def run_startup() -> None:
     for fn in _startup_hooks:
         fn()

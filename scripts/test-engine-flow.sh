@@ -31,10 +31,10 @@ curl -s -L -X POST "$BASE/api/Intelligence/evaluate" \
   -d '{"context":"test-flow","inputs":{"key":"value"}}' | head -c 300
 echo -e "\n"
 
-echo "5) Optimization optimize"
+echo "5) Optimization optimize (loan_approval + generic)"
 curl -s -L -X POST "$BASE/api/Optimization/optimize" \
   -H "Content-Type: application/json" \
-  -d '{"targetId":"t1","objective":"minimize","constraints":{}}' | head -c 300
+  -d '{"targetId":"loan_approval","objective":"maximize","constraints":{"creditScore":750,"incomeToLoan":0.3,"existingLoans":1}}' | head -c 300
 echo -e "\n"
 
 echo "6) AI infer"
