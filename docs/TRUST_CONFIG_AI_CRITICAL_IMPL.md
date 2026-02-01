@@ -72,3 +72,11 @@ Enterprise-grade implementation of three critical components (branch: `feat/trus
 | TRUST_JWT_ISSUER | engine-trust | Expected issuer |
 | TRUST_JWT_AUDIENCE | engine-trust | Expected audience |
 | Trust:JwtSecret | engine-api | Same for in-process stub |
+
+---
+
+## Deploy
+
+- **engine-trust**: `deploy/railway/engine-trust/Dockerfile` — includes PyJWT
+- **engine-ai**: `deploy/railway/engine-ai/Dockerfile` — includes training job queue
+- **Test**: `./scripts/test-trust-config-ai.sh [TRUST_URL] [AI_URL]`
