@@ -5,12 +5,18 @@ Ensures saas-layer is on path when run from service dir; uses in-memory stores f
 import sys
 from pathlib import Path
 
-# Add saas-layer so tenancy, usage packages can be imported (run from services/saas-api-service)
-# __file__ = .../services/saas-api-service/app/service.py -> parents[3] = repo root
-_root = Path(__file__).resolve().parents[3]
-_saas = _root / "saas-layer"
-if _saas.exists() and str(_saas) not in sys.path:
-    sys.path.insert(0, str(_saas))
+# Add saas-layer so tenancy, usage packages can be imported (run from monorepo or Docker)
+# Monorepo: .../services/saas-api-service/app/service.py -> parents[3] = repo root
+# Docker: /app/app/service.py -> parents[1] = /app, saas-layer at /app/saas-layer
+for n in range(1, 6):
+    try:
+        _root = Path(__file__).resolve().parents[n]
+        _saas = _root / "saas-layer"
+        if _saas.exists() and str(_saas) not in sys.path:
+            sys.path.insert(0, str(_saas))
+            break
+    except IndexError:
+        break
 
 from tenancy.tenant_manager import TenantManager, Tenant, create_tenant_manager
 from usage.usage_tracker import UsageTracker, UsageSummary, create_usage_tracker

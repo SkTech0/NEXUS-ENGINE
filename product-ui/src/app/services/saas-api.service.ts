@@ -20,7 +20,8 @@ export interface UsageSummaryItem {
 
 @Injectable({ providedIn: 'root' })
 export class SaasApiService {
-  private readonly baseUrl = (environment as { saasApiUrl?: string })?.saasApiUrl ?? '/api/saas';
+  private readonly baseUrl =
+    (environment as { saasApiUrl?: string })?.saasApiUrl?.replace(/^__SAAS_API_URL__$/, '/api/saas') ?? '/api/saas';
 
   constructor(private readonly http: HttpClient) {}
 
