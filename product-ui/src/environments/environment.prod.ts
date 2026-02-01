@@ -6,5 +6,5 @@
 export const environment = {
   production: true,
   apiUrl: 'https://helpful-optimism-production-7709.up.railway.app/api',
-  saasApiUrl: '__SAAS_API_URL__',
+  saasApiUrl: 'https://saas-api-production-8be1.up.railway.app/api/saas',
 };

@@ -14,7 +14,7 @@ The **saas-api** service exposes tenant management and usage tracking. The **pro
 ## 2. Configure product-ui for Tenants
 
 1. Open **product-ui** service → **Variables**
-2. Add variable: `SAAS_API_URL` = your saas-api public URL (e.g. `https://saas-api-xxx.up.railway.app`)
+2. Add variable: `SAAS_API_URL` = your saas-api base URL **including `/api/saas`** (e.g. `https://saas-api-xxx.up.railway.app/api/saas`)
 3. **Important:** Use as **build variable** so it’s available during `docker build`. Railway passes Variables to the build; the Dockerfile uses `ARG SAAS_API_URL` and injects it into the Angular env.
 4. Redeploy product-ui.
 
