@@ -22,6 +22,7 @@ _ALGORITHMS = [
 ]
 _ISSUER = os.environ.get("TRUST_JWT_ISSUER", "").strip() or None
 _AUDIENCE = os.environ.get("TRUST_JWT_AUDIENCE", "").strip() or None
+_SKIP_AUDIENCE = os.environ.get("TRUST_JWT_SKIP_AUDIENCE", "false").lower() in ("true", "1", "yes")
 
 
 def verify_jwt(token: str) -> tuple[bool, str | None, dict[str, Any] | None]:
@@ -54,7 +55,7 @@ def verify_jwt(token: str) -> tuple[bool, str | None, dict[str, Any] | None]:
         if _ISSUER:
             kwargs["issuer"] = _ISSUER
             options["verify_iss"] = True
-        if _AUDIENCE:
+        if _AUDIENCE and not _SKIP_AUDIENCE:
             kwargs["audience"] = _AUDIENCE
             options["verify_aud"] = True
         payload = jwt.decode(token, **kwargs)

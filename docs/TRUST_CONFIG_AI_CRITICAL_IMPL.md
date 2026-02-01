@@ -82,7 +82,8 @@ The Trust page (`/trust`) includes a **Verify JWT** section:
 | TRUST_JWT_STRICT | engine-trust | Require secret (reject unverified) |
 | TRUST_JWT_ALGORITHMS | engine-trust | Comma-separated (e.g. HS256,RS256) |
 | TRUST_JWT_ISSUER | engine-trust | Expected issuer (optional) |
-| TRUST_JWT_AUDIENCE | engine-trust | Expected audience. Use `nexus-engine` for demo token. Leave unset to skip audience check. |
+| TRUST_JWT_AUDIENCE | engine-trust | Expected audience. Use `nexus-engine` for demo. Leave unset to skip. |
+| TRUST_JWT_SKIP_AUDIENCE | engine-trust | Set `true` to skip audience validation (fixes Invalid audience for demo). |
 | Trust:JwtSecret | engine-api | Same for in-process stub |
 
 ---

@@ -122,7 +122,7 @@ export class TrustComponent {
       return 'Ensure engine-trust has TRUST_JWT_SECRET set and matches the signing secret.';
     }
     if (msg.includes('invalid audience')) {
-      return 'Set TRUST_JWT_AUDIENCE=nexus-engine on engine-trust (or leave it unset). The demo token uses audience "nexus-engine".';
+      return 'Add TRUST_JWT_SKIP_AUDIENCE=true on engine-trust to skip audience check. Or set TRUST_JWT_AUDIENCE=nexus-engine (must match exactly).';
     }
     if (msg.includes('invalid issuer')) {
       return 'Set TRUST_JWT_ISSUER on engine-trust to match the token, or leave it unset for demo tokens.';
